@@ -2,7 +2,7 @@ from flask import Flask, render_template
 
 # Initialize the Flask application
 # We explicitly set the template folder, though 'templates' is the default
-app = Flask(__name__, template_folder='templates', static_folder='assets')
+app = Flask(__name__, template_folder='templates', static_folder='static')
 
 @app.route('/')
 def index():

@@ -1,18 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Music VR</title>
-    <!-- A-Frame CDN -->
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  </head>
-  <body>
-    <a-scene>
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-      <a-sky color="#ECECEC"></a-sky>
-    </a-scene>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <title>Music VR</title>
+  <!-- A-Frame CDN -->
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <!-- Custom Scripts -->
+  <script src="{{ url_for('static', filename='js/forest.js') }}"></script>
+</head>
+
+<body>
+  <a-scene>
+    <!-- Forest Generator (Auditorium + Outside) -->
+    <a-entity forest-generator></a-entity>
+    <!-- Assets -->
+    <a-assets>
+      <img id="sky" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/city.jpg">
+    </a-assets>
+
+    <!-- Camera / User -->
+    <a-entity position="0 1.6 30">
+      <a-camera look-controls wasd-controls></a-camera>
+    </a-entity>
+
+    <!-- Environment -->
+    <!-- <a-sky color="#0f0f15"></a-sky> Dark premium background -->
+    <a-sky color="#0f0f15"></a-sky> <!-- Dark premium background -->
+
+    <!-- Lighting -->
+    <!-- <a-light type="ambient" color="#222"></a-light>
+    <a-light type="spot" position="0 20 0" rotation="-90 0 0" color="#fff" intensity="1.5" angle="45"
+      penumbra="0.3"></a-light>
+    <a-light type="point" position="-20 10 20" color="#00ff00" intensity="0.5"></a-light>
+    <a-light type="point" position="20 10 -20" color="#ff00ff" intensity="0.5"></a-light> -->
+
+    <!-- Main Stage (CENTER) - Radius ~15m -->
+    <a-cylinder position="0 0.5 0" radius="15" height="1" color="#fff" material="roughness: 0.2; metalness: 0.8">
+      <!-- Glow edge -->
+      <a-torus radius="15" radius-tubular="0.2" rotation="90 0 0" color="#0F0F0F"
+        material="emissive: #ffd200; emissiveIntensity: 2"></a-torus>
+    </a-cylinder>
+
+    <!-- Auditorium Seating (Raked seating effect) -->
+    <!-- Tier 1 -->
+    <a-ring position="0 1.5 0" rotation="-90 0 0" radius-inner="18" radius-outer="22" color="#333"
+      material="side: double"></a-ring>
+    <a-cylinder position="0 1 0" radius="22" height="2" open-ended="true" color="#222" material="side: double"
+      theta-length="360"></a-cylinder>
+
+    <!-- Tier 2 -->
+    <a-ring position="0 3 0" rotation="-90 0 0" radius-inner="22" radius-outer="26" color="#444"
+      material="side: double"></a-ring>
+    <a-cylinder position="0 2.5 0" radius="26" height="5" open-ended="true" color="#2a2a2a" material="side: double"
+      theta-length="360"></a-cylinder>
+
+    <!-- Tier 3 -->
+    <a-ring position="0 4.5 0" rotation="-90 0 0" radius-inner="26" radius-outer="30" color="#555"
+      material="side: double"></a-ring>
+    <a-cylinder position="0 4 0" radius="30" height="8" open-ended="true" color="#333" material="side: double"
+      theta-length="360"></a-cylinder>
+
+    <!-- Tier 4 (Outer limit ~60m diameter) -->
+    <a-ring position="0 6 0" rotation="-90 0 0" radius-inner="30" radius-outer="35" color="#666"
+      material="side: double"></a-ring>
+
+    <!-- Floor under everything -->
+    <a-plane position="0 0 0" rotation="-90 0 0" width="100" height="100" color="#050505"></a-plane>
+  </a-scene>
+</body>
+
 </html>
