@@ -6,12 +6,56 @@ AFRAME.registerComponent('forest-generator', {
         maxRadius: { type: 'number', default: 100 },
         smallScale: { type: 'number', default: 1.0 },
         bigScale: { type: 'number', default: 2.0 },
-        treeModel: { type: 'string', default: '' }
+        treeModel: { type: 'string', default: '' },
+        autoStart: { type: 'boolean', default: true }
     },
 
     init: function () {
         const scene = this.el.sceneEl;
         const assets = document.querySelector('a-assets');
+
+        // State for manual trigger
+        this.growthStarted = false;
+
+        // Listener for manual trigger (Growth)
+        this.el.addEventListener('start-growth', () => {
+            this.growthStarted = true;
+            const trees = this.el.querySelectorAll('.forest-tree');
+            trees.forEach(tree => {
+                if (tree.dataset.targetScale) {
+                    const delay = parseFloat(tree.dataset.delay || 0);
+                    const duration = parseFloat(tree.dataset.duration || 1000);
+
+                    tree.removeAttribute('animation');
+                    tree.setAttribute('animation', {
+                        property: 'scale',
+                        to: tree.dataset.targetScale,
+                        dur: duration,
+                        easing: 'easeOutElastic',
+                        delay: delay
+                    });
+                }
+            });
+        });
+
+        // Listener for manual trigger (Shrink/Exit)
+        this.el.addEventListener('start-shrink', () => {
+            this.growthStarted = false; // Reset state
+            const trees = this.el.querySelectorAll('.forest-tree');
+            trees.forEach(tree => {
+                const delay = parseFloat(tree.dataset.delay || 0);
+                const duration = parseFloat(tree.dataset.duration || 1000);
+
+                tree.removeAttribute('animation');
+                tree.setAttribute('animation', {
+                    property: 'scale',
+                    to: '0 0 0',
+                    dur: duration,
+                    easing: 'easeInElastic',
+                    delay: delay
+                });
+            });
+        });
 
         // 1. Create the mixin if it doesn't exist
         if (!document.querySelector('#pine-tree-mixin')) {
@@ -57,6 +101,7 @@ AFRAME.registerComponent('forest-generator', {
 
         // Container for the tree
         const treeEntity = document.createElement('a-entity');
+        treeEntity.classList.add('forest-tree');
         treeEntity.setAttribute('position', `${x} ${y} ${z}`);
 
         // Apply Base Scale + Variation
@@ -90,14 +135,21 @@ AFRAME.registerComponent('forest-generator', {
             // Wait for model to load before animating, and fix materials
             treeEntity.addEventListener('model-loaded', () => {
 
-                // Animate showing up
-                treeEntity.setAttribute('animation', {
-                    property: 'scale',
-                    to: targetScaleStr,
-                    dur: duration,
-                    easing: 'easeOutElastic',
-                    delay: delay
-                });
+                // Store target scale for later (or now)
+                treeEntity.dataset.targetScale = targetScaleStr;
+                treeEntity.dataset.delay = delay;
+                treeEntity.dataset.duration = duration;
+
+                if (this.data.autoStart || this.growthStarted) {
+                    // Animate showing up
+                    treeEntity.setAttribute('animation', {
+                        property: 'scale',
+                        to: targetScaleStr,
+                        dur: duration,
+                        easing: 'easeOutElastic',
+                        delay: delay
+                    });
+                }
             });
 
         } else {
@@ -105,13 +157,19 @@ AFRAME.registerComponent('forest-generator', {
 
             // Animation for procedural (standard uniform scale)
             const targetScaleStr = `${baseScale} ${baseScale} ${baseScale}`;
-            treeEntity.setAttribute('animation', {
-                property: 'scale',
-                to: targetScaleStr,
-                dur: duration,
-                easing: 'easeOutElastic',
-                delay: delay
-            });
+            treeEntity.dataset.targetScale = targetScaleStr;
+            treeEntity.dataset.delay = delay;
+            treeEntity.dataset.duration = duration;
+
+            if (this.data.autoStart || this.growthStarted) {
+                treeEntity.setAttribute('animation', {
+                    property: 'scale',
+                    to: targetScaleStr,
+                    dur: duration,
+                    easing: 'easeOutElastic',
+                    delay: delay
+                });
+            }
 
 
             // Trunk (Brown Cylinder)
