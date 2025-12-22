@@ -5,7 +5,8 @@ AFRAME.registerComponent('forest-generator', {
         minRadius: { type: 'number', default: 20 },
         maxRadius: { type: 'number', default: 100 },
         smallScale: { type: 'number', default: 1.0 },
-        bigScale: { type: 'number', default: 2.5 }
+        bigScale: { type: 'number', default: 2.0 },
+        treeModel: { type: 'string', default: '' }
     },
 
     init: function () {
@@ -60,33 +61,85 @@ AFRAME.registerComponent('forest-generator', {
 
         // Apply Base Scale + Variation
         // We apply baseScale to the entity's scale property so it affects everything uniformly
-        treeEntity.setAttribute('scale', `${baseScale} ${baseScale} ${baseScale}`);
+        // Initial scale 0 for animation
+        treeEntity.setAttribute('scale', '0 0 0');
 
-        // Trunk (Brown Cylinder)
-        const trunk = document.createElement('a-cylinder');
-        trunk.setAttribute('radius', 0.5 * scaleWidth);
-        trunk.setAttribute('height', 2 * scaleHeight);
-        trunk.setAttribute('color', '#5D4037'); // Wood brown
-        trunk.setAttribute('position', `0 ${1 * scaleHeight} 0`);
-        treeEntity.appendChild(trunk);
+        // Animation attributes
+        const targetScale = `${baseScale} ${baseScale} ${baseScale}`;
+        const duration = 1000 + Math.random() * 500; // 1000ms - 1500ms
+        const delay = Math.random() * 2000; // 0ms - 2000ms delay
 
-        // Leaves (Green Cone) - Layer 1 (Bottom/Wide)
-        const leaves1 = document.createElement('a-cone');
-        leaves1.setAttribute('radius-bottom', 2.5 * scaleWidth);
-        leaves1.setAttribute('radius-top', 0);
-        leaves1.setAttribute('height', 3 * scaleHeight);
-        leaves1.setAttribute('color', '#2E7D32'); // Forest Green
-        leaves1.setAttribute('position', `0 ${3 * scaleHeight} 0`);
-        treeEntity.appendChild(leaves1);
+        if (this.data.treeModel) {
+            // 3D MODEL MODE
+            treeEntity.setAttribute('gltf-model', this.data.treeModel);
 
-        // Leaves (Green Cone) - Layer 2 (Top/Narrow)
-        const leaves2 = document.createElement('a-cone');
-        leaves2.setAttribute('radius-bottom', 2 * scaleWidth);
-        leaves2.setAttribute('radius-top', 0);
-        leaves2.setAttribute('height', 2.5 * scaleHeight);
-        leaves2.setAttribute('color', '#388E3C'); // Slightly lighter green
-        leaves2.setAttribute('position', `0 ${4.5 * scaleHeight} 0`);
-        treeEntity.appendChild(leaves2);
+            // Random rotation
+            treeEntity.setAttribute('rotation', `0 ${Math.random() * 360} 0`);
+
+            // For imported models, we usually need to adjust scale significantly 
+            // depending on the source units. We use the calculated height/width as multipliers.
+            // Adjusting this base multiplier might be needed if trees are too small/big.
+            const modelMult = 0.125;
+            const finalScaleX = baseScale * scaleWidth * modelMult;
+            const finalScaleY = baseScale * scaleHeight * modelMult;
+            const finalScaleZ = baseScale * scaleWidth * modelMult;
+
+            const targetScaleStr = `${finalScaleX} ${finalScaleY} ${finalScaleZ}`;
+
+            // Animate scale from 0
+            // Wait for model to load before animating, and fix materials
+            treeEntity.addEventListener('model-loaded', () => {
+
+                // Animate showing up
+                treeEntity.setAttribute('animation', {
+                    property: 'scale',
+                    to: targetScaleStr,
+                    dur: duration,
+                    easing: 'easeOutElastic',
+                    delay: delay
+                });
+            });
+
+        } else {
+            // PROCEDURAL MODE (Fallback)
+
+            // Animation for procedural (standard uniform scale)
+            const targetScaleStr = `${baseScale} ${baseScale} ${baseScale}`;
+            treeEntity.setAttribute('animation', {
+                property: 'scale',
+                to: targetScaleStr,
+                dur: duration,
+                easing: 'easeOutElastic',
+                delay: delay
+            });
+
+
+            // Trunk (Brown Cylinder)
+            const trunk = document.createElement('a-cylinder');
+            trunk.setAttribute('radius', 0.5 * scaleWidth);
+            trunk.setAttribute('height', 2 * scaleHeight);
+            trunk.setAttribute('color', '#5D4037'); // Wood brown
+            trunk.setAttribute('position', `0 ${1 * scaleHeight} 0`);
+            treeEntity.appendChild(trunk);
+
+            // Leaves (Green Cone) - Layer 1 (Bottom/Wide)
+            const leaves1 = document.createElement('a-cone');
+            leaves1.setAttribute('radius-bottom', 2.5 * scaleWidth);
+            leaves1.setAttribute('radius-top', 0);
+            leaves1.setAttribute('height', 3 * scaleHeight);
+            leaves1.setAttribute('color', '#2E7D32'); // Forest Green
+            leaves1.setAttribute('position', `0 ${3 * scaleHeight} 0`);
+            treeEntity.appendChild(leaves1);
+
+            // Leaves (Green Cone) - Layer 2 (Top/Narrow)
+            const leaves2 = document.createElement('a-cone');
+            leaves2.setAttribute('radius-bottom', 2 * scaleWidth);
+            leaves2.setAttribute('radius-top', 0);
+            leaves2.setAttribute('height', 2.5 * scaleHeight);
+            leaves2.setAttribute('color', '#388E3C'); // Slightly lighter green
+            leaves2.setAttribute('position', `0 ${4.5 * scaleHeight} 0`);
+            treeEntity.appendChild(leaves2);
+        }
 
         // Append to scene
         this.el.appendChild(treeEntity);
