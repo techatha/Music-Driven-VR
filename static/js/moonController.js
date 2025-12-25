@@ -15,7 +15,11 @@ AFRAME.registerComponent('model-opacity', {
         mesh.traverse(function (node) {
             if (node.isMesh) {
                 node.material.opacity = data;
-                node.material.transparent = true; // Always enable transparency if we are messing with opacity
+                node.material.transparent = data < 1.0;
+                // FIX: Enable depthWrite when visible (>0.1) so it blocks stars even if semi-transparent (0.7)
+                node.material.depthWrite = data > 0.1;
+                node.castShadow = true;
+                node.receiveShadow = true;
                 node.material.fog = false; // IGNORE FOG
 
                 // FIX: If map is missing, manually load it!

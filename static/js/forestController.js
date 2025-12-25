@@ -135,6 +135,20 @@ AFRAME.registerComponent('forest-generator', {
             // Wait for model to load before animating, and fix materials
             treeEntity.addEventListener('model-loaded', () => {
 
+                // Fix Materials for correct occlusion (user request)
+                const mesh = treeEntity.getObject3D('mesh');
+                if (mesh) {
+                    mesh.traverse((node) => {
+                        if (node.isMesh) {
+                            // Optimal settings for trees (alpha cutout):
+                            node.material.transparent = false; // Treat as opaque for sorting
+                            node.material.alphaTest = 0.5;     // Cut out transparent pixels
+                            node.material.depthWrite = true;   // Write depth for solid parts
+                            node.material.needsUpdate = true;
+                        }
+                    });
+                }
+
                 // Store target scale for later (or now)
                 treeEntity.dataset.targetScale = targetScaleStr;
                 treeEntity.dataset.delay = delay;
