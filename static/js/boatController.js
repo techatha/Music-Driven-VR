@@ -17,17 +17,8 @@ AFRAME.registerComponent('boat-controller', {
             'url(static/assets/3Dmodels/river_boat/scene_fixed.gltf)'
         );
 
-        // Apply color tint when model is loaded
-        boatVisual.addEventListener('model-loaded', (e) => {
-            const mesh = e.detail.model;
-            // Traverse the mesh to find materials
-            mesh.traverse((node) => {
-                if (node.isMesh) {
-                    // Tint the material.
-                    node.material.color.set(this.data.color);
-                }
-            });
-        });
+        // Use the generic component to tint the model
+        boatVisual.setAttribute('model-color', 'color', this.data.color);
 
 
         // Adjust scale/rotation (trial and error)

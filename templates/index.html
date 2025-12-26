@@ -15,6 +15,8 @@
   <script src="{{ url_for('static', filename='js/water.js') }}"></script>
   <script src="{{ url_for('static', filename='js/boatController.js') }}"></script>
   <script src="{{ url_for('static', filename='js/cameraController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modelColor.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/waterRipple.js') }}"></script>
   <script src="{{ url_for('static', filename='js/lanterns.js') }}"></script>
 
 </head>
@@ -24,7 +26,7 @@
 
     <!-- Moon (Keep existing) -->
     <a-entity id="moon" gltf-model="url({{ url_for('static', filename='assets/3Dmodels/moon/scene_fixed.gltf') }})"
-      position="50 150 -150" scale="2 2 2" moon-controller>
+      position="50 150 -150" scale="1 1 1" moon-controller>
     </a-entity>
 
     <!-- Assets -->
@@ -50,7 +52,7 @@
 
     <!-- NEW: Boat -->
     <!-- The boat-controller moves this entity. We add an ID so the camera can find it. -->
-    <a-entity id="boat" boat-controller="color: #ff0000" position="0 0 0">
+    <a-entity id="boat" boat-controller="color: #00FF00" water-ripple="scale: 5" position="0 0 0">
       <!-- Decoration can go here, but NOT the camera -->
     </a-entity>
 
