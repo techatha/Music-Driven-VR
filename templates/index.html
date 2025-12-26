@@ -14,6 +14,7 @@
   <!-- New Scene Scripts -->
   <script src="{{ url_for('static', filename='js/water.js') }}"></script>
   <script src="{{ url_for('static', filename='js/boatController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/cameraController.js') }}"></script>
   <script src="{{ url_for('static', filename='js/lanterns.js') }}"></script>
 
 </head>
@@ -22,7 +23,7 @@
   <a-scene fog="type: exponential; color: #050510; density: 0.002">
 
     <!-- Moon (Keep existing) -->
-    <a-entity id="moon" gltf-model="url({{ url_for('static', filename='assets/3Dmodels/moon/scene.gltf') }})"
+    <a-entity id="moon" gltf-model="url({{ url_for('static', filename='assets/3Dmodels/moon/scene_fixed.gltf') }})"
       position="50 150 -150" scale="2 2 2" moon-controller>
     </a-entity>
 
@@ -37,7 +38,7 @@
 
     <!-- Forest (Background) -->
     <a-entity
-      forest-generator="count: 40; treeModel: url({{ url_for('static', filename='assets/3Dmodels/pine_tree_game-ready.glb') }}); autoStart: true">
+      forest-generator="count: 40; treeModel: url({{ url_for('static', filename='assets/3Dmodels/pine_tree_fixed.glb') }}); autoStart: true">
     </a-entity>
 
 
@@ -47,15 +48,18 @@
     <!-- NEW: Lanterns Spawner -->
     <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
 
-    <!-- NEW: Boat & Player Rig -->
-    <!-- The boat-controller moves this entity. We put the camera INSIDE it so the player rides the boat. -->
-    <a-entity boat-controller position="0 0 0">
+    <!-- NEW: Boat -->
+    <!-- The boat-controller moves this entity. We add an ID so the camera can find it. -->
+    <a-entity id="boat" boat-controller="color: #ff0000" position="0 0 0">
+      <!-- Decoration can go here, but NOT the camera -->
+    </a-entity>
 
-      <!-- Player Camera (Moved slightly back on the boat) -->
-      <a-entity position="0 1.6 0.5" rotation="0 180 0">
-        <a-camera look-controls wasd-controls="fly: false"></a-camera>
-      </a-entity>
-
+    <!-- Player Camera (Detached from boat hierarchy to avoid wiggle) -->
+    <!-- target: #boat; offset: 0 1.6 0.5 (slightly back); copyRotationY: false (stable horizon) -->
+    <a-entity camera-controller="target: #boat; offset: 0 1.6 0.5; copyRotationY: true" position="0 1.6 0"
+      rotation="0 180 0">
+      <!-- Added wrapper for rotation offset if needed, but simple follow is often enough -->
+      <a-camera look-controls wasd-controls="fly: false"></a-camera>
     </a-entity>
 
 
@@ -93,7 +97,7 @@
     console.log("Starting Lanterns...");
     // Use 'emit' to trigger the event listener we just added
     if (lanterns) lanterns.emit('start-lanterns');
-  }, 1000);
+  }, 10000);
 
 </script>
 

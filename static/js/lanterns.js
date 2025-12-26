@@ -4,39 +4,44 @@ AFRAME.registerComponent('lanterns', {
         range: { type: 'number', default: 100 },
         speed: { type: 'number', default: 0.5 },
         color: { type: 'color', default: '#FFD700' },
-        autoStart: { type: 'boolean', default: false } // New property
+        autoStart: { type: 'boolean', default: false }
     },
 
     init: function () {
         this.lanterns = [];
-        this.isPlaying = this.data.autoStart; // State flag
+        this.canAnimate = this.data.autoStart;
+
+        // Hide initially until triggered
+        if (!this.canAnimate) {
+            this.el.setAttribute('visible', false);
+        }
+
+        console.log(`[Lanterns] Init. AutoStart: ${this.canAnimate}`);
+
         this.createLanterns();
 
         // Listen for start event
         this.el.addEventListener('start-lanterns', () => {
-            console.log("Lanterns started!");
-            this.isPlaying = true;
+            console.log("[Lanterns] Event Received: start-lanterns");
+            this.canAnimate = true;
+            this.el.setAttribute('visible', true); // Show them
         });
     },
 
     createLanterns: function () {
-        const data = this.schema;
+        const data = this.data;
         const range = parseFloat(data.range) || 100;
-        console.log(`Spawning ${data.count} lanterns within range ${range}`);
+        console.log(`[Lanterns] Spawning ${data.count} lanterns within range ${range}`);
 
         for (let i = 0; i < data.count; i++) {
             const el = document.createElement('a-entity');
 
-            // Random position on the water (XZ plane)
-            // Safety check: ensure x/z result in valid numbers
             const x = (Math.random() - 0.5) * range;
             const z = (Math.random() - 0.5) * range;
-            const y = Math.random() * 20;
+            // Spawn BELOW the player/water so they float up from underneath
+            const y = -5 + Math.random() * -10;
 
-            if (isNaN(x) || isNaN(z)) {
-                console.error("Lantern position NaN! Skipping.");
-                continue;
-            }
+            if (isNaN(x) || isNaN(z)) continue;
 
             el.setAttribute('position', { x: x, y: y, z: z });
 
@@ -48,7 +53,6 @@ AFRAME.registerComponent('lanterns', {
                 openEnded: true
             });
 
-            // Material: Emissive glowing paper
             el.setAttribute('material', {
                 color: '#fff',
                 emissive: data.color,
@@ -69,7 +73,7 @@ AFRAME.registerComponent('lanterns', {
     },
 
     tick: function (time, timeDelta) {
-        if (!this.isPlaying) return; // Don't animate until started
+        if (!this.canAnimate) return;
 
         const dt = timeDelta / 1000;
 
@@ -85,9 +89,10 @@ AFRAME.registerComponent('lanterns', {
 
             // Reset if too high
             if (pos.y > 50) {
-                pos.y = 0;
-                pos.x = (Math.random() - 0.5) * this.schema.range;
-                pos.z = (Math.random() - 0.5) * this.schema.range;
+                pos.y = -10; // Respawn at bottom
+                // Fix the other bug too: use this.data.range
+                pos.x = (Math.random() - 0.5) * this.data.range;
+                pos.z = (Math.random() - 0.5) * this.data.range;
             }
         });
     }

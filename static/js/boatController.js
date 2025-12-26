@@ -1,5 +1,7 @@
 AFRAME.registerComponent('boat-controller', {
-    schema: {},
+    schema: {
+        color: { type: 'color', default: '#FFFFFF' }
+    },
     init: function () {
         this.createBoat();
         this.animateFloating();
@@ -9,49 +11,55 @@ AFRAME.registerComponent('boat-controller', {
         // Create a wrapper for the boat visual
         const boatVisual = document.createElement('a-entity');
 
-        // 1. Main Hull (Simple Box for now)
-        // User can replace this with a GLB model later: 
-        // boatVisual.setAttribute('gltf-model', 'url(...)');
-        const hull = document.createElement('a-box');
-        hull.setAttribute('color', '#5D4037'); // Wood color
-        hull.setAttribute('depth', 6);
-        hull.setAttribute('height', 0.5);
-        hull.setAttribute('width', 2.5);
-        hull.setAttribute('position', '0 0.25 0');
-        hull.setAttribute('material', 'roughness: 1');
+        // Load the GLTF Model
+        boatVisual.setAttribute(
+            'gltf-model',
+            'url(static/assets/3Dmodels/river_boat/scene_fixed.gltf)'
+        );
 
-        // 2. Simple "Lantern" on the boat for light
-        const boatLight = document.createElement('a-entity');
-        boatLight.setAttribute('geometry', 'primitive: cylinder; radius: 0.1; height: 0.3');
-        boatLight.setAttribute('material', 'color: #ff9; emissive: #ff9; emissiveIntensity: 2');
-        boatLight.setAttribute('position', '0 1 -2.5'); // Front of boat
+        // Apply color tint when model is loaded
+        boatVisual.addEventListener('model-loaded', (e) => {
+            const mesh = e.detail.model;
+            // Traverse the mesh to find materials
+            mesh.traverse((node) => {
+                if (node.isMesh) {
+                    // Tint the material.
+                    node.material.color.set(this.data.color);
+                }
+            });
+        });
 
-        // Point light from lantern
-        const light = document.createElement('a-light');
-        light.setAttribute('type', 'point');
-        light.setAttribute('intensity', '0.8');
-        light.setAttribute('distance', '10');
-        light.setAttribute('color', '#ffaa00');
-        light.setAttribute('position', '0 0 0');
-        boatLight.appendChild(light);
 
-        boatVisual.appendChild(hull);
+        // Adjust scale/rotation (trial and error)
+        // Reduced significantly to 0.001 based on user feedback
+        boatVisual.setAttribute('scale', '15 15 15');
+        boatVisual.setAttribute('rotation', '0 90 0');
+        boatVisual.setAttribute('position', '0 0 0');
+
+        // Add a lantern light on the boat itself
+        const boatLight = document.createElement('a-light');
+        boatLight.setAttribute('type', 'point');
+        boatLight.setAttribute('intensity', '0.6');
+        boatLight.setAttribute('distance', '8');
+        boatLight.setAttribute('color', '#ffaa00');
+        boatLight.setAttribute('position', '0 1 0'); // Centered light
         boatVisual.appendChild(boatLight);
 
         this.el.appendChild(boatVisual);
+
+        console.log("Boat created");
     },
 
     animateFloating: function () {
         // Simple sine wave bobbing
-        // We use the animation component directly on the entity for simplicity
         this.el.setAttribute('animation', {
             property: 'position',
             dir: 'alternate',
             dur: 3000,
             easing: 'easeInOutSine',
             loop: true,
-            to: '0 0.2 0', // Float up slightly
-            from: '0 -0.1 0' // Float down slightly
+            to: '0 0.2 0',
+            from: '0 -0.1 0'
         });
 
         this.el.setAttribute('animation__roll', {
@@ -60,7 +68,7 @@ AFRAME.registerComponent('boat-controller', {
             dur: 5000,
             easing: 'easeInOutSine',
             loop: true,
-            to: '1 0 2', // Slight roll
+            to: '1 0 2',
             from: '-1 0 -1'
         });
     }
