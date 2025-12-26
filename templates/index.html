@@ -10,109 +10,90 @@
   <script src="{{ url_for('static', filename='js/forestController.js') }}"></script>
   <script src="{{ url_for('static', filename='js/moonController.js') }}"></script>
   <script src="{{ url_for('static', filename='js/starsController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/stageController.js') }}"></script>
+  <!-- New Scene Scripts -->
+  <script src="{{ url_for('static', filename='js/water.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/boatController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lanterns.js') }}"></script>
 
 </head>
 
 <body>
-  <a-scene fog="type: linear; color: #151520; near: 30; far: 120">
-    <!-- Forest Generator (Auditorium + Outside) -->
-    <a-entity
-      forest-generator="count: 50; treeModel: url({{ url_for('static', filename='assets/3Dmodels/pine_tree_game-ready.glb') }}); autoStart: false">
+  <a-scene fog="type: exponential; color: #050510; density: 0.002">
+
+    <!-- Moon (Keep existing) -->
+    <a-entity id="moon" gltf-model="url({{ url_for('static', filename='assets/3Dmodels/moon/scene.gltf') }})"
+      position="50 150 -150" scale="2 2 2" moon-controller>
     </a-entity>
 
-    <!-- Moon -->
-    <a-entity id="moon" gltf-model="url({{ url_for('static', filename='assets/3Dmodels/moon/scene.gltf') }})"
-      position="50 150 -50" scale="0.5 0.5 0.5" moon-controller>
-    </a-entity>
     <!-- Assets -->
     <a-assets>
       <img id="sky" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/city.jpg">
     </a-assets>
 
-    <!-- Camera / User -->
-    <a-entity position="0 1.6 0">
-      <a-camera look-controls wasd-controls="fly: true; acceleration: 100"></a-camera>
-    </a-entity>
-
     <!-- Environment -->
-    <a-sky color="#0f0f15"></a-sky> <!-- Dark premium background -->
-
-    <!-- Stars -->
+    <a-sky color="#050510"></a-sky>
     <a-entity star-system="count: 5000; radius: 400; color: #FFF"></a-entity>
 
+    <!-- Forest (Background) -->
+    <a-entity
+      forest-generator="count: 40; treeModel: url({{ url_for('static', filename='assets/3Dmodels/pine_tree_game-ready.glb') }}); autoStart: true">
+    </a-entity>
+
+
+    <!-- NEW: Water Surface -->
+    <a-entity water-helper="width: 1000; height: 1000"></a-entity>
+
+    <!-- NEW: Lanterns Spawner -->
+    <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
+
+    <!-- NEW: Boat & Player Rig -->
+    <!-- The boat-controller moves this entity. We put the camera INSIDE it so the player rides the boat. -->
+    <a-entity boat-controller position="0 0 0">
+
+      <!-- Player Camera (Moved slightly back on the boat) -->
+      <a-entity position="0 1.6 0.5" rotation="0 180 0">
+        <a-camera look-controls wasd-controls="fly: false"></a-camera>
+      </a-entity>
+
+    </a-entity>
+
+
     <!-- Lighting -->
-    <a-light type="ambient" color="#BBB"></a-light>
-    <a-light type="directional" position="1 10 1" intensity="0.5"></a-light>
-    <a-light type="spot" position="0 20 0" rotation="-90 0 0" color="#fff" intensity="1.5" angle="45"
-      penumbra="0.3"></a-light>
-
-    <!-- Main Stage (CENTER) - Radius ~15m -->
-    <a-cylinder position="0 0.5 0" radius="15" height="1" color="#fff" material="roughness: 0.2; metalness: 0.8">
-      <!-- Glow edge -->
-      <a-torus radius="15" radius-tubular="0.2" rotation="90 0 0" color="#0F0F0F"
-        material="emissive: #ffd200; emissiveIntensity: 2"></a-torus>
-    </a-cylinder>
-
-    <!-- Auditorium Seating (Raked seating effect) -->
-    <!-- Tier 1 -->
-    <a-ring position="0 1.5 0" rotation="-90 0 0" radius-inner="18" radius-outer="22" color="#333"
-      material="side: double"></a-ring>
-    <a-cylinder position="0 1 0" radius="22" height="2" open-ended="true" color="#222" material="side: double"
-      theta-length="360"></a-cylinder>
-
-    <!-- Tier 2 -->
-    <a-ring position="0 3 0" rotation="-90 0 0" radius-inner="22" radius-outer="26" color="#444"
-      material="side: double"></a-ring>
-    <a-cylinder position="0 2.5 0" radius="26" height="5" open-ended="true" color="#2a2a2a" material="side: double"
-      theta-length="360"></a-cylinder>
-
-    <!-- Tier 3 -->
-    <a-ring position="0 4.5 0" rotation="-90 0 0" radius-inner="26" radius-outer="30" color="#555"
-      material="side: double"></a-ring>
-    <a-cylinder position="0 4 0" radius="30" height="8" open-ended="true" color="#333" material="side: double"
-      theta-length="360"></a-cylinder>
-
-    <!-- Tier 4 (Outer limit ~60m diameter) -->
-    <a-ring position="0 6 0" rotation="-90 0 0" radius-inner="30" radius-outer="35" color="#666"
-      material="side: double"></a-ring>
+    <a-light type="ambient" color="#222"></a-light>
+    <!-- Moonlight -->
+    <a-light type="directional" position="20 50 -20" color="#aaccff" intensity="0.6"></a-light>
+    <!-- Lantern Warmth -->
+    <a-light type="point" position="0 5 0" color="#ffaa00" intensity="0.5" distance="50"></a-light>
 
 
-    <!-- Fog Barrier / "Doughnut" around the stage -->
-    <a-torus position="0 0 0" rotation="-90 0 0" radius="70" radius-tubular="8" color="#111"
-      material="opacity: 0.45; transparent: true; roughness: 1"></a-torus>
-
-    <!-- Floor under everything -->
-    <a-plane position="0 0 0" rotation="-90 0 0" width="100" height="100" color="#050505"></a-plane>
+    <!-- Floor (Deep underwater floor, barely visible) -->
+    <a-plane position="0 -5 0" rotation="-90 0 0" width="1000" height="1000" color="#000"></a-plane>
 
 
   </a-scene>
 </body>
 <script>
-  // Event Relay: Make the moon respond to the same events as the forest
   const forest = document.querySelector('[forest-generator]');
   const moon = document.querySelector('#moon');
+  const lanterns = document.querySelector('[lanterns]');
 
-  // TRIGGER MOON FIRST (Test)
+  // Trigger Moon Growth
   setTimeout(() => {
-    console.log('Moon Growing...');
     if (moon) moon.emit('start-growth');
   }, 1000);
 
+  // Trigger Forest Growth
   setTimeout(() => {
-    console.log('Moon Shrinking...');
-    if (moon) moon.emit('start-shrink');
-  }, 15000);
+    if (forest) forest.emit('start-growth');
+  }, 500);
 
-  // Auto-trigger for demo (User can remove this)
+  //Trigger Lanterns
   setTimeout(() => {
-    console.log('Growing...');
-    forest.emit('start-growth');
-  }, 1500);
-
-  setTimeout(() => {
-    console.log('Shrinking...');
-    forest.emit('start-shrink');
-  }, 10000);
+    console.log("Starting Lanterns...");
+    // Use 'emit' to trigger the event listener we just added
+    if (lanterns) lanterns.emit('start-lanterns');
+  }, 1000);
 
 </script>
 
