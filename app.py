@@ -4,9 +4,15 @@ from flask import Flask, render_template
 # We explicitly set the template folder, though 'templates' is the default
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/urban')
+def urban_preset():
+    return render_template('urban_preset.html')
 
 if __name__ == '__main__':
     # debug=True enables the reloader and debugger

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Music VR - Urban Preset</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="{{ url_for('static', filename='js/components/urban-environment.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/city-generator.js') }}"></script>
+</head>
+
+<body>
+    <a-scene>
+        <a-assets>
+            <a-asset-item id="building01"
+                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_01/scene.gltf') }}"></a-asset-item>
+            <a-asset-item id="building02"
+                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_02/scene.gltf') }}"></a-asset-item>
+            <a-asset-item id="building03"
+                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_03/scene.gltf') }}"></a-asset-item>
+            <a-asset-item id="building05"
+                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_05/scene.gltf') }}"></a-asset-item>
+            <a-asset-item id="building06"
+                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_06/scene.gltf') }}"></a-asset-item>
+        </a-assets>
+
+        <!-- Urban Environment Component -->
+        <a-entity urban-environment></a-entity>
+
+        <!-- City Block Component -->
+        <a-entity city-block="width: 8.5; depth: 100"></a-entity>
+
+        <!-- Player Rig -->
+        <a-entity id="rig" position="0 1.6 0">
+            <a-entity camera look-controls wasd-controls position="0 0 0"></a-entity>
+        </a-entity>
+
+    </a-scene>
+</body>
+
+</html>
