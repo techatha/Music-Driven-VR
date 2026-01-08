@@ -1,3 +1,6 @@
+import { measureModel } from '../modelSizeCache.js';
+import { resolveFootprint } from '../layoutResolver.js';
+
 AFRAME.registerComponent('city-block', {
     schema: {
         width: { type: 'number', default: 20 },
@@ -13,6 +16,8 @@ AFRAME.registerComponent('city-block', {
     },
 
     placeEdge(side) {
+        const THREE = AFRAME.THREE;
+
         const buildingModels = [
             '#building01',
             '#building02',
@@ -22,33 +27,43 @@ AFRAME.registerComponent('city-block', {
         ];
 
         const isLeft = side === 'left';
-        const edgeLength = this.data.depth;
-        let cursor = -edgeLength / 2;
+        const edgeStart = -this.data.depth / 2;
+        const edgeEnd = this.data.depth / 2;
 
-        while (cursor < edgeLength / 2) {
-            const size = THREE.MathUtils.randFloat(this.data.min, this.data.max);
-            if (cursor + size > edgeLength / 2) break;
+        let cursor = edgeStart;
 
-            const b = document.createElement('a-entity');
-
-            const x =
-                (isLeft ? -1 : 1) *
-                (this.data.width / 2 + size / 2 + this.data.padding);
-
-            const z = cursor + size / 2;
-
-            b.setAttribute('position', { x, y: 0, z });
-            b.setAttribute('scale', `${size} ${size * 2} ${size}`);
-            b.setAttribute('rotation', `0 ${isLeft ? 90 : -90} 0`);
+        const spawnNext = () => {
+            if (cursor >= edgeEnd) return;
 
             const modelUrl =
                 buildingModels[Math.floor(Math.random() * buildingModels.length)];
+
+            const scale = THREE.MathUtils.randFloat(this.data.min, this.data.max);
+
+            const b = document.createElement('a-entity');
             b.setAttribute('gltf-model', modelUrl);
-            
+            b.setAttribute('scale', `${scale} ${scale * 2} ${scale}`);
+            b.setAttribute('rotation', `0 ${isLeft ? 90 : -90} 0`);
 
             this.el.appendChild(b);
 
-            cursor += size + this.data.padding;
-        }
+            measureModel(b, modelUrl, size => {
+                const { depth, width } =
+                    resolveFootprint(size, isLeft ? 90 : -90, 'z');
+
+                const x =
+                    (isLeft ? -1 : 1) *
+                    (this.data.width / 2 + width / 2 + this.data.padding);
+
+                const z = cursor + depth / 2;
+
+                b.setAttribute('position', { x, y: 0, z });
+
+                cursor += depth + this.data.padding;
+                spawnNext(); // 🔁 chain safely
+            });
+        };
+
+        spawnNext(); // 🚀 START THE CHAIN
     }
 });
