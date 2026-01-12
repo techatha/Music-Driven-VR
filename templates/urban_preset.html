@@ -6,6 +6,7 @@
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script type="module" src="{{ url_for('static', filename='js/components/urban-environment.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/components/city-generator.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/components/street-lights.js') }}"></script>
 </head>
 
 <body>
@@ -21,13 +22,18 @@
                 src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_05/scene.gltf') }}"></a-asset-item>
             <a-asset-item id="building06"
                 src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_06/scene.gltf') }}"></a-asset-item>
+            <a-asset-item id="street-light"
+                src="{{ url_for('static', filename='assets/3Dmodels/street_light/scene.gltf') }}"></a-asset-item>
         </a-assets>
 
         <!-- Urban Environment Component -->
         <a-entity urban-environment></a-entity>
 
         <!-- City Block Component -->
-        <a-entity city-block="width: 8.5; depth: 100"></a-entity>
+        <a-entity city-block="width: 30; depth: 100"></a-entity>
+
+        <!-- Street Lights Component -->
+        <a-entity street-lights="width: 15; depth: 100"></a-entity>
 
         <!-- Player Rig -->
         <a-entity id="rig" position="0 1.6 0">
