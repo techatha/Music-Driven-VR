@@ -14,6 +14,12 @@ def index():
 def urban_preset():
     return render_template('urban_preset.html')
 
+
+@app.route('/ocean')
+def ocean_preset():
+    return render_template('ocean_environment.html')
+    
+
 if __name__ == '__main__':
     # debug=True enables the reloader and debugger
     app.run(debug=True, port=5000)
