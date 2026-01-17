@@ -18,6 +18,11 @@ def urban_preset():
 @app.route('/ocean')
 def ocean_preset():
     return render_template('ocean_environment.html')
+
+
+@app.route('/sky')
+def sky_preset():
+    return render_template('sky_environment.html')
     
 
 if __name__ == '__main__':

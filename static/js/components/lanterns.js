@@ -53,14 +53,25 @@ AFRAME.registerComponent('lanterns', {
                 openEnded: true
             });
 
+            // Random Size
+            const scale = 0.8 + Math.random() * 0.5; // 0.8 to 1.3
+            el.setAttribute('scale', { x: scale, y: scale, z: scale });
+
             el.setAttribute('material', {
-                color: '#fff',
-                emissive: data.color,
-                emissiveIntensity: 1.5,
-                side: 'double',
+                shader: 'gradient-shader',
+                topColor: '#FFD700',    // Fixed Gold
+                bottomColor: '#FF4500', // Fixed Red-Orange
+                minY: -0.4,             // Bottom of cylinder (height 0.8)
+                maxY: 0.4,              // Top of cylinder
+                useLocal: 1.0,          // Use Local Coords -> Triggers Linear Logic
+                opacity: 0.9,
                 transparent: true,
-                opacity: 0.9
+                side: 'double',
+                emissive: '#FFD700',
+                emissiveIntensity: 0.5  // Balanced glow
             });
+
+            // Point Light Removed for Performance
 
             this.el.appendChild(el);
 
