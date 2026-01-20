@@ -12,7 +12,7 @@
     <script src="{{ url_for('static', filename='js/components/starsController.js') }}"></script>
     <script src="{{ url_for('static', filename='js/components/stageController.js') }}"></script>
     <!-- New Scene Scripts -->
-    <script src="{{ url_for('static', filename='js/components/water.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/waterController.js') }}"></script>
     <script src="{{ url_for('static', filename='js/components/boatController.js') }}"></script>
     <script src="{{ url_for('static', filename='js/components/cameraController.js') }}"></script>
     <script src="{{ url_for('static', filename='js/components/modelColor.js') }}"></script>
@@ -20,6 +20,7 @@
     <script src="{{ url_for('static', filename='js/components/lanterns.js') }}"></script>
     <script src="{{ url_for('static', filename='js/components/skyController.js') }}"></script>
     <script src="{{ url_for('static', filename='js/GradientShader.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/multiColorFloor.js') }}"></script>
 
 </head>
 
@@ -56,16 +57,15 @@
         </a-entity>
 
 
-        <!-- NEW: Water Surface -->
-        <a-entity water-helper="width: 1000; height: 1000"></a-entity>
+        <!-- NEW: Water Surface (Parent for draining animation) -->
+        <a-entity water-helper="width: 1000; height: 1000" position="0 -20 0">
+            <!-- Boat Nested Inside to sink with Water -->
+            <a-entity id="boat" boat-controller="color: #00FF00" water-ripple position="0 0 0">
+                <!-- Decoration can go here, but NOT the camera -->
+            </a-entity>
 
-        <!-- NEW: Lanterns Spawner -->
-        <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
-
-        <!-- NEW: Boat -->
-        <!-- The boat-controller moves this entity. We add an ID so the camera can find it. -->
-        <a-entity id="boat" boat-controller="color: #00FF00" water-ripple position="0 0 0">
-            <!-- Decoration can go here, but NOT the camera -->
+            <!-- Lanterns Nested to sink with Water -->
+            <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
         </a-entity>
 
         <!-- Player Camera (Detached from boat hierarchy to avoid wiggle) -->
@@ -85,8 +85,9 @@
         <a-light type="point" position="0 5 0" color="#ffaa00" intensity="0.5" distance="50"></a-light>
 
 
-        <!-- Floor (Deep underwater floor, barely visible) -->
-        <a-plane position="0 -5 0" rotation="-90 0 0" width="1000" height="1000" color="#000"></a-plane>
+        <!-- Floor (Multi-Color Capable) -->
+        <a-plane position="0 -5 0" rotation="-90 0 0" width="1000" height="1000"
+            multi-color-floor="preset: none"></a-plane>
 
 
     </a-scene>
@@ -106,12 +107,24 @@
         if (forest) forest.emit('start-growth');
     }, 500);
 
-    //Trigger Lanterns
+    // Trigger Lanterns (Lanterns are now nested in water, so they rise with it)
+    const water = document.querySelector('[water-helper]');
+
+    // SEQUENCE:
+    // 0s: Hidden at Y=-20
+    // 10s: Rise to Y=0 (Start Fill)
+    // 20s: Drain to Y=-20 (Start Drain)
+
     setTimeout(() => {
-        console.log("Starting Lanterns...");
-        // Use 'emit' to trigger the event listener we just added
-        if (lanterns) lanterns.emit('start-lanterns');
+        console.log("Starting Lanterns and Water Rise...");
+        if (lanterns) lanterns.emit('start-lanterns'); // Activate lantern logic
+        if (water) water.emit('start-fill');           // Rise up
     }, 10000);
+
+    setTimeout(() => {
+        console.log("Returning Water (Drain)...");
+        if (water) water.emit('start-drain');          // Drain down
+    }, 20000); // 10s after rising (total 20s)
 
     // Sky Controller UI Logic
     const skyCtrl = document.querySelector('[sky-controller]');
