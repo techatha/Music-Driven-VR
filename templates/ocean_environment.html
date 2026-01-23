@@ -7,7 +7,7 @@
   <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
   <!-- Custom Components -->
   <script src="{{ url_for('static', filename='js/components/ship-y-controller.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/procedural-sunset.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/skyController.js') }}"></script>
 </head>
 
 <body>
@@ -17,8 +17,8 @@
         src="https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/water/Water_1_M_Normal.jpg">
     </a-assets>
 
-    <!-- Procedural Sunset -->
-    <a-entity procedural-sunset></a-entity>
+    <!-- Procedural Sunset via Sky Controller -->
+    <a-entity sky-controller="type: procedural"></a-entity>
 
     <!-- Manually adding ambient light to ensure models aren't too dark vs the backend -->
     <a-light type="ambient" color="#222"></a-light>

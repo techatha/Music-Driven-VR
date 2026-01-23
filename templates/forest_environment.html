@@ -63,10 +63,9 @@
             <a-entity id="boat" boat-controller="color: #00FF00" water-ripple position="0 0 0">
                 <!-- Decoration can go here, but NOT the camera -->
             </a-entity>
-
-            <!-- Lanterns Nested to sink with Water -->
-            <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
         </a-entity>
+
+        <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
 
         <!-- Player Camera (Detached from boat hierarchy to avoid wiggle) -->
         <!-- target: #boat; offset: 0 1.6 0.5 (slightly back); copyRotationY: false (stable horizon) -->
@@ -126,9 +125,24 @@
         if (water) water.emit('start-drain');          // Drain down
     }, 20000); // 10s after rising (total 20s)
 
-    // Sky Controller UI Logic
-    const skyCtrl = document.querySelector('[sky-controller]');
+    // Wait for scene to load before emitting events to ensure components are ready
+    document.querySelector('a-scene').addEventListener('loaded', function () {
+        // Sky Controller UI Logic
+        const skyCtrl = document.querySelector('[sky-controller]');
+        if (skyCtrl) {
+            console.log("Emitting set-morning...");
+            skyCtrl.emit('set-morning');
+        }
 
+        const floorCtrl = document.querySelector('[multi-color-floor]');
+        if (floorCtrl) {
+            console.log("Emitting set-floor-snow...");
+            floorCtrl.emit('set-floor-snow');
+        }
+    });
+
+    // Button Listeners (can be attached immediately as they depend on user interaction later)
+    const skyCtrl = document.querySelector('[sky-controller]');
     if (skyCtrl) {
         document.getElementById('btn-morning').addEventListener('click', () => skyCtrl.emit('set-morning'));
         document.getElementById('btn-evening').addEventListener('click', () => skyCtrl.emit('set-evening'));

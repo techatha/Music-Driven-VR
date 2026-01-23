@@ -1,9 +1,50 @@
 AFRAME.registerComponent('sky-controller', {
     schema: {
-        startTime: { type: 'string', default: 'night' }
+        // Shared
+        type: { type: 'string', default: 'gradient' }, // 'gradient' or 'procedural'
+
+        // Gradient Mode Props
+        startTime: { type: 'string', default: 'night' },
+
+        // Procedural Mode Props (from procedural-sunset.js)
+        preset: { type: 'string', default: 'arches' },
+        skyType: { type: 'string', default: 'atmosphere' },
+        lighting: { type: 'string', default: 'distant' },
+        ground: { type: 'string', default: 'none' }
     },
 
     init: function () {
+        // Decision: Procedural vs Gradient
+        if (this.data.type === 'procedural') {
+            this.initProcedural();
+        } else {
+            this.initGradient();
+        }
+    },
+
+    initProcedural: function () {
+        // We rely on aframe-environment-component being loaded (ensure script is in head).
+        const envData = {
+            preset: this.data.preset,
+            skyType: this.data.skyType,
+            lighting: this.data.lighting,
+            ground: this.data.ground,
+
+            // Customized for Sunset (Hardcoded for now as per original component)
+            horizonColor: '#ff9900',
+            skyColor: '#331133',
+            dressing: 'none', // No trees/mushrooms/etc generated
+            fog: 0.02         // Add some depth
+        };
+
+        this.el.setAttribute('environment', envData);
+        this.el.setAttribute('scale', '5 5 5');
+
+        // Manually adjust sun position
+        this.el.setAttribute('environment', 'lightPosition', '-1 2 -5'); // Low sun
+    },
+
+    initGradient: function () {
         this.sky = document.querySelector('a-sky');
         this.sunLight = document.querySelector('a-light[type="directional"]');
         this.ambientLight = document.querySelector('a-light[type="ambient"]');
@@ -17,9 +58,12 @@ AFRAME.registerComponent('sky-controller', {
         this.el.addEventListener('set-morning', this.setMorning);
         this.el.addEventListener('set-evening', this.setEvening);
         this.el.addEventListener('set-night', this.setNight);
+
+        // Initialize based on start time if needed, currently defaults handle it
     },
 
     setMorning: function () {
+        if (this.data.type === 'procedural') return; // Not supported for procedural yet
         console.log("Setting Morning...");
         // Bright, foggy morning
         this.updateEnvironment(
@@ -34,6 +78,7 @@ AFRAME.registerComponent('sky-controller', {
     },
 
     setEvening: function () {
+        if (this.data.type === 'procedural') return;
         console.log("Setting Evening...");
         // Warm sunset gradient
         this.updateEnvironment(
@@ -48,6 +93,7 @@ AFRAME.registerComponent('sky-controller', {
     },
 
     setNight: function () {
+        if (this.data.type === 'procedural') return;
         console.log("Setting Night...");
         // Dark, moody night
         this.updateEnvironment(
