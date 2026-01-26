@@ -23,6 +23,11 @@ def ocean_preset():
 @app.route('/sky')
 def sky_preset():
     return render_template('forest_environment.html')
+
+
+@app.route('/room')
+def room_preset():
+    return render_template('room_environment.html')
     
 
 if __name__ == '__main__':
