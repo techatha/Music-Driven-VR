@@ -179,3 +179,108 @@ AFRAME.registerComponent('curtain-controller', {
         this.el.setAttribute('position', newPos);
     }
 });
+
+// Fireplace Controller
+AFRAME.registerComponent('fireplace-controller', {
+    schema: {
+        model: { type: 'string', default: 'assets/3Dmodels/fireplace_low-poly/scene.gltf' },
+        scale: { type: 'vec3', default: { x: 6, y: 6, z: 6 } },
+        position: { type: 'vec3', default: { x: 0, y: 0, z: 0 } },
+        isOn: { type: 'boolean', default: true },
+        fireInternalPosition: { type: 'vec3', default: { x: 0, y: 0.5, z: -0.5 } }
+    },
+
+    init: function () {
+        // --- Fireplace Model (Parent) ---
+        this.el.setAttribute('gltf-model', '/static/' + this.data.model);
+        this.el.setAttribute('scale', this.data.scale);
+
+        // Apply global offset
+        const p = this.el.getAttribute('position') || { x: 0, y: 0, z: 0 };
+        this.el.setAttribute('position', {
+            x: p.x + this.data.position.x,
+            y: p.y + this.data.position.y,
+            z: p.z + this.data.position.z
+        });
+
+        // --- Fire Container (Child) ---
+        this.fireContainer = document.createElement('a-entity');
+        this.fireContainer.setAttribute('position', this.data.fireInternalPosition);
+        this.fireContainer.setAttribute('visible', this.data.isOn);
+        this.el.appendChild(this.fireContainer);
+
+        this.createFireEffects(this.fireContainer);
+    },
+
+    createFireEffects(container) {
+        this.fireLight = document.createElement('a-light');
+        this.fireLight.setAttribute('type', 'point');
+        this.fireLight.setAttribute('color', '#FF6600');
+        this.fireLight.setAttribute('intensity', 1.5);
+        this.fireLight.setAttribute('distance', 6);
+        this.fireLight.setAttribute('decay', 2);
+        this.fireLight.setAttribute('animation', {
+            property: 'intensity',
+            from: 1.1,
+            to: 2.2,
+            dir: 'alternate',
+            dur: 350,
+            loop: true
+        });
+        this.fireLight.setAttribute('position', '0 -0.364 0.785');
+        container.appendChild(this.fireLight);
+
+        const fires = [
+            { pos: '0.751 -0.456 1.017', rot: '0 180 0' },
+            { pos: '-0.975 -0.480 -0.077', rot: '0 0 0' },
+            { pos: '-0.288 -0.460 1.459', rot: '0 100 0' }
+        ];
+
+        const scales = [0.28, 0.35, 0.3];
+        const speeds = [1.7, 1.9, 1.6];
+
+        fires.forEach((cfg, i) => {
+            const flame = document.createElement('a-entity');
+            flame.setAttribute('gltf-model', '/static/assets/3Dmodels/fire/scene.gltf');
+            flame.setAttribute('scale', `${scales[i]} ${scales[i]} ${scales[i]}`);
+            flame.setAttribute('position', cfg.pos);
+            flame.setAttribute('rotation', cfg.rot);
+            container.appendChild(flame);
+
+            flame.addEventListener('model-loaded', () => {
+                flame.setAttribute('animation-mixer', {
+                    clip: 'Take 001',
+                    loop: 'repeat',
+                    timeScale: speeds[i]
+                });
+
+                const mesh = flame.getObject3D('mesh');
+                if (!mesh) return;
+
+                mesh.traverse(node => {
+                    if (node.isMesh && node.material) {
+                        node.material.transparent = true;
+                        node.material.opacity = 0.75;
+                        node.material.depthWrite = false;
+                        node.material.blending = THREE.AdditiveBlending;
+                        node.material.needsUpdate = true;
+                    }
+                });
+            });
+        });
+    },
+
+
+    toggleFire: function () {
+        this.data.isOn = !this.data.isOn;
+        this.fireContainer.setAttribute('visible', this.data.isOn);
+
+        if (this.fireLight) {
+            this.fireLight.setAttribute(
+                'intensity',
+                this.data.isOn ? 1.5 : 0
+            );
+        }
+    }
+});
+

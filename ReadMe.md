@@ -47,3 +47,5 @@ https://sketchfab.com/3d-models/dusty-old-bookshelf-free-6c5ac2547db34c3c81b2e48
 "2 Layer Curtain With Role box curtain" (https://skfb.ly/oNWYt) by htcamtien1407 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 "Fireplace Low-poly" (https://skfb.ly/oForR) by MaX3Dd is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+"fire" (https://skfb.ly/6V9OK) by Edgar_koh is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

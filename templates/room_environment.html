@@ -6,6 +6,7 @@
     <title>Cozy Room Environment</title>
     <!-- A-Frame CDN -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <!-- Custom Scripts -->
     <script src="{{ url_for('static', filename='js/components/room-objects.js') }}"></script>
     <script src="{{ url_for('static', filename='js/components/window-view-controller.js') }}"></script>
@@ -80,10 +81,14 @@
         </a-entity>
 
         <!-- Coffee Table (New Model) -->
-        <a-entity coffeetable-controller position="0 0 0"></a-entity>
+        <a-entity coffeetable-controller position="-1.633 -0.010 1.667"></a-entity>
 
         <!-- Curtain (Over Window) -->
         <a-entity curtain-controller position="9 2 0" rotation="0 -90 0"></a-entity>
+
+        <!-- Fireplace -->
+        <a-entity fireplace-controller position="0 0 9.217" rotation="0 180 0"></a-entity>
+{#        <a-entity fireplace-controller position="0 0 0" rotation="0 180 0"></a-entity>#}
 
         <!-- Window Frame -->
         <a-box position="10 5 0" width="0.2" height="4.2" depth="5.2" color="#8B4513" visible="false"></a-box>
@@ -98,8 +103,8 @@
             material="transparent: true"></a-plane>
 
         <!-- Lighting (Cozy Warmth) -->
-        <!-- Lighting (Cozy Warmth) -->
         <a-light type="ambient" color="#FFF" intensity="0.3"></a-light>
+
         <!-- Central Warmth -->
         <a-light type="point" position="0 10 0" color="#FFA500" intensity="0.5" distance="25" decay="2"></a-light>
 
