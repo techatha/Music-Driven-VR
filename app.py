@@ -12,22 +12,22 @@ def index():
 
 @app.route('/urban')
 def urban_preset():
-    return render_template('urban_preset.html')
+    return render_template('environments/urban_preset.html')
 
 
 @app.route('/ocean')
 def ocean_preset():
-    return render_template('ocean_environment.html')
+    return render_template('environments/ocean_environment.html')
 
 
 @app.route('/sky')
 def sky_preset():
-    return render_template('forest_environment.html')
+    return render_template('environments/forest_environment.html')
 
 
 @app.route('/room')
 def room_preset():
-    return render_template('room_environment.html')
+    return render_template('environments/room_environment.html')
     
 
 if __name__ == '__main__':

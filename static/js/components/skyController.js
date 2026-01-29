@@ -23,7 +23,7 @@ AFRAME.registerComponent('sky-controller', {
     },
 
     initProcedural: function () {
-        // We rely on aframe-environment-component being loaded (ensure script is in head).
+        // We rely on aframe-environments-component being loaded (ensure script is in head).
         const envData = {
             preset: this.data.preset,
             skyType: this.data.skyType,

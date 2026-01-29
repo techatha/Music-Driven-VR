@@ -1,4 +1,4 @@
-AFRAME.registerComponent('urban-environment', {
+AFRAME.registerComponent('urban-environments', {
     schema: {
         active: { default: true }
     },
