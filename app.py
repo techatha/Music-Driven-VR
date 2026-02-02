@@ -12,7 +12,7 @@ def index():
 
 @app.route('/urban')
 def urban_preset():
-    return render_template('environments/urban_preset.html')
+    return render_template('environments/urban_environment.html')
 
 
 @app.route('/ocean')
@@ -20,7 +20,7 @@ def ocean_preset():
     return render_template('environments/ocean_environment.html')
 
 
-@app.route('/sky')
+@app.route('/forest')
 def sky_preset():
     return render_template('environments/forest_environment.html')
 
