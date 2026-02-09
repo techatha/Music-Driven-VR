@@ -28,7 +28,12 @@ def sky_preset():
 @app.route('/room')
 def room_preset():
     return render_template('environments/room_environment.html')
-    
+
+
+# Flask Backend APIs
+@app.route('/api/upload')
+def uploadMusicFile():
+    return
 
 if __name__ == '__main__':
     # debug=True enables the reloader and debugger
