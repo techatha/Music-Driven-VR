@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request
+from python.analysis import *
 
 # Initialize the Flask application
 # We explicitly set the template folder, though 'templates' is the default
@@ -31,9 +32,34 @@ def room_preset():
 
 
 # Flask Backend APIs
-@app.route('/api/upload')
-def uploadMusicFile():
-    return
+@app.route('/api/upload', methods=['POST'])
+def upload_music():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    file = request.files['file']
+    job_id = init_job(file)
+
+    return jsonify({"job_id": job_id}), 202
+
+
+@app.route('/api/status/<job_id>', methods=['GET'])
+def get_status(job_id):
+    job = jobs.get(job_id)
+    if not job:
+        return jsonify({"error": "Job not found"}), 404
+    return jsonify({"status": job['status']})
+
+
+@app.route('/api/analysis/<job_id>', methods=['GET'])
+def get_analysis(job_id):
+    job = jobs.get(job_id)
+    if not job:
+        return jsonify({"error": "Job not found"}), 404
+    if job['status'] != 'done':
+        return jsonify({"error": "Analysis not complete"}), 400
+    return jsonify(job['result'])
+
 
 if __name__ == '__main__':
     # debug=True enables the reloader and debugger
