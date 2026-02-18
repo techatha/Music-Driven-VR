@@ -1,5 +1,8 @@
 from flask import Flask, render_template, jsonify, request
 from python.analysis import *
+from python.lyric_finding_service import analyze_music
+import os
+import tempfile
 
 # Initialize the Flask application
 # We explicitly set the template folder, though 'templates' is the default
@@ -59,6 +62,37 @@ def get_analysis(job_id):
     if job['status'] != 'done':
         return jsonify({"error": "Analysis not complete"}), 400
     return jsonify(job['result'])
+
+
+@app.route('/upload_v2')
+def upload_v2():
+    return render_template('index2.html')
+
+
+@app.route('/api/analyze', methods=['POST'])
+def analyze_music_api():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    # Save temp file
+    temp_dir = tempfile.gettempdir()
+    temp_path = os.path.join(temp_dir, file.filename)
+    file.save(temp_path)
+
+    try:
+        # Run analysis
+        result = analyze_music(temp_path)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        # Clean up
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 
 if __name__ == '__main__':
