@@ -49,6 +49,7 @@ def extract_metadata(file_path):
     return metadata
 
 
+# search_genius_lyrics() helper
 def scrape_lyrics_from_url(song_url):
     """
     Scrapes lyrics from a Genius URL using BeautifulSoup.
@@ -64,6 +65,7 @@ def scrape_lyrics_from_url(song_url):
         if not containers:
             return None
 
+        print(containers)
         lyrics = "\n".join(c.get_text(separator="\n") for c in containers)
         return lyrics.split("Read More", 1)[-1].strip()
     
@@ -133,7 +135,7 @@ def recognize_song(file_path):
         return None
 
 
-def analyze_music(file_path):
+def find_song_info(file_path):
     """
     Main function to analyze a music file.
     1. Extract metadata.
@@ -146,7 +148,6 @@ def analyze_music(file_path):
         "album": None,
         "cover_art": None,
         "lyrics": None,
-        "bpm": None, # Placeholder for now
         "source": "Process"
     }
 
@@ -185,6 +186,7 @@ def analyze_music(file_path):
     return result
 
 
+# Test get lyric from the song Chandelier by Sia
 if __name__ == "__main__":
     import sys
     import json
@@ -199,7 +201,7 @@ if __name__ == "__main__":
         # Create a dummy file if it doesn't exist for quick local testing (optional)
         # But assuming file exists for now
         try:
-            analysis_result = analyze_music(mp3_file)
+            analysis_result = find_song_info(mp3_file)
             print(json.dumps(analysis_result, indent=4))
         except Exception as e:
             print(f"Execution error: {e}")
