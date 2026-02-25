@@ -1,106 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <title>Music VR</title>
-  <!-- A-Frame CDN -->
-  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  <!-- Custom Scripts -->
-  <script src="{{ url_for('static', filename='js/components/forestController.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/moonController.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/starsController.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/stageController.js') }}"></script>
-  <!-- New Scene Scripts -->
-  <script src="{{ url_for('static', filename='js/components/waterController.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/boatController.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/cameraController.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/modelColor.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/waterRipple.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/components/lanterns.js') }}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music VR - Upload & Analyze</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index2.css') }}">
 
+    <!-- A-Frame MUST be loaded before any A-Frame components -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+    <!-- Environment Component Library -->
+    <script
+        src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+
+    <!-- Shared A-Frame Custom Components -->
+    <script src="{{ url_for('static', filename='js/components/skyController.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/GradientShader.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/multiColorFloor.js') }}"></script>
+
+    <!-- Forest & Sky Components -->
+    <script src="{{ url_for('static', filename='js/components/forestController.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/moonController.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/starsController.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/stageController.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/boatController.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/cameraController.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modelColor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/waterRipple.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/lanterns.js') }}"></script>
+
+    <!-- Ocean Components -->
+    <script src="{{ url_for('static', filename='js/components/ship-y-controller.js') }}"></script>
+
+    <!-- Room Components -->
+    <script src="{{ url_for('static', filename='js/components/room-objects.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/window-view-controller.js') }}"></script>
+
+    <!-- Urban Components (Using module type if needed, but normally just script for a-frame) -->
+    <script type="module" src="{{ url_for('static', filename='js/components/urban-environment.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/components/city-generator.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/components/street-lights.js') }}"></script>
 </head>
 
 <body>
-  <a-scene fog="type: exponential; color: #050510; density: 0.002">
+    <!-- Temporary Test Buttons -->
+    <div id="test-buttons" style="position: fixed; top: 10px; left: 10px; z-index: 9999; display: flex; gap: 10px;">
+        <button id="btn-test-urban" style="padding: 10px; cursor: pointer;">Test Urban</button>
+        <button id="btn-test-ocean" style="padding: 10px; cursor: pointer;">Test Ocean</button>
+        <button id="btn-test-forest" style="padding: 10px; cursor: pointer;">Test Forest</button>
+        <button id="btn-test-room" style="padding: 10px; cursor: pointer;">Test Room</button>
+    </div>
 
-    <!-- Moon (Keep existing) -->
-    <a-entity id="moon" gltf-model="url({{ url_for('static', filename='assets/3Dmodels/moon/scene_fixed.gltf') }})"
-      position="50 150 -150" scale="1 1 1" moon-controller>
-    </a-entity>
+    <!-- UI Layer -->
+    <div id="ui-layer" style="display: none;">
+        <div class="container">
+            <h1>Music Analysis</h1>
 
-    <!-- Assets -->
-    <a-assets>
-      <img id="sky" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/city.jpg">
-    </a-assets>
+            <div class="upload-area" id="drop-zone">
+                <div class="upload-icon">🎵</div>
+                <p>Drag & Drop your MP3 file here</p>
+                <p style="font-size: 0.8em; opacity: 0.6;">or click to browse</p>
+                <input type="file" id="file-input" accept=".mp3,audio/*" style="display: none;">
+            </div>
 
-    <!-- Environment -->
-    <a-sky color="#050510"></a-sky>
-    <a-entity star-system="count: 5000; radius: 400; color: #FFF"></a-entity>
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p id="loading-text">Analyzing... Extracting metadata, running Shazam, and finding lyrics...</p>
+            </div>
 
-    <!-- Forest (Background) -->
-    <a-entity
-      forest-generator="count: 40; treeModel: url({{ url_for('static', filename='assets/3Dmodels/pine_tree_fixed.glb') }}); autoStart: true">
-    </a-entity>
+            <div class="error-msg" id="error-msg" style="display: none;"></div>
 
+            <div class="result-section" id="result-section" style="display: none;">
+                <div class="track-info">
+                    <img src="" alt="Cover Art" class="cover-art" id="cover-art">
+                    <div class="meta-text">
+                        <h2 id="track-title">Unknown Title</h2>
+                        <p><strong>Artist:</strong> <span id="track-artist">Unknown Artist</span></p>
+                        <p><strong>Album:</strong> <span id="track-album">-</span></p>
+                        <p><strong>Source:</strong> <span id="data-source">Shazam / Genius</span></p>
+                    </div>
+                </div>
 
-    <!-- NEW: Water Surface -->
-    <a-entity water-helper="width: 1000; height: 1000"></a-entity>
+                <h3>Lyrics (Verify & Edit)</h3>
+                <textarea class="lyrics-box" id="lyrics-box" rows="12"
+                    style="width: 100%; border-radius: 8px; padding: 10px; font-family: inherit; resize: vertical;"></textarea>
 
-    <!-- NEW: Lanterns Spawner -->
-    <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
+                <button id="confirm-btn"
+                    style="display: none; padding: 10px 20px; font-size: 16px; margin-top: 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
+                    Play & Start VR Generation
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <!-- NEW: Boat -->
-    <!-- The boat-controller moves this entity. We add an ID so the camera can find it. -->
-    <a-entity id="boat" boat-controller="color: #00FF00" water-ripple position="0 0 0">
-      <!-- Decoration can go here, but NOT the camera -->
-    </a-entity>
+    <!-- VR Layer (Hidden initially) -->
+    <div id="vr-layer" style="display: block;">
+        <a-scene music-manager>
+            <a-assets>
+                <!-- Urban -->
+                <a-asset-item id="building01"
+                    src="/static/assets/3Dmodels/buildings/building_01/scene.gltf"></a-asset-item>
+                <a-asset-item id="building02"
+                    src="/static/assets/3Dmodels/buildings/building_02/scene.gltf"></a-asset-item>
+                <a-asset-item id="building03"
+                    src="/static/assets/3Dmodels/buildings/building_03/scene.gltf"></a-asset-item>
+                <a-asset-item id="building05"
+                    src="/static/assets/3Dmodels/buildings/building_05/scene.gltf"></a-asset-item>
+                <a-asset-item id="building06"
+                    src="/static/assets/3Dmodels/buildings/building_06/scene.gltf"></a-asset-item>
+                <a-asset-item id="street-light" src="/static/assets/3Dmodels/street_light/scene.gltf"></a-asset-item>
+                <!-- Ocean -->
+                <img id="waterNormal"
+                    src="https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/water/Water_1_M_Normal.jpg">
+                <!-- Forest -->
+                <img id="sky" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/city.jpg">
+            </a-assets>
 
-    <!-- Player Camera (Detached from boat hierarchy to avoid wiggle) -->
-    <!-- target: #boat; offset: 0 1.6 0.5 (slightly back); copyRotationY: false (stable horizon) -->
-    <a-entity camera-controller="target: #boat; offset: 0 1.6 0.5; copyRotationY: true" position="0 1.6 0"
-      rotation="0 180 0">
-      <!-- Added wrapper for rotation offset if needed, but simple follow is often enough -->
-      <a-camera look-controls wasd-controls="fly: false"></a-camera>
-    </a-entity>
+            <a-entity id="environment-root"></a-entity>
+        </a-scene>
+    </div>
 
+    </a-scene>
+    </div>
 
-    <!-- Lighting -->
-    <a-light type="ambient" color="#222"></a-light>
-    <!-- Moonlight -->
-    <a-light type="directional" position="20 50 -20" color="#aaccff" intensity="0.6"></a-light>
-    <!-- Lantern Warmth -->
-    <a-light type="point" position="0 5 0" color="#ffaa00" intensity="0.5" distance="50"></a-light>
+    <!-- Custom Scripts -->
+    <!-- Environment Injectors -->
+    <script src="{{ url_for('static', filename='js/environments/urbanInjector.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/environments/oceanInjector.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/environments/forestInjector.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/environments/roomInjector.js') }}"></script>
 
+    <!-- Main Injector -->
+    <script src="{{ url_for('static', filename='js/EnvironmentInjector.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/AudioStateManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 
-    <!-- Floor (Deep underwater floor, barely visible) -->
-    <a-plane position="0 -5 0" rotation="-90 0 0" width="1000" height="1000" color="#000"></a-plane>
+    <!-- Audio Playback Controller -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/audioPlaybackController.css') }}">
+    <script src="{{ url_for('static', filename='js/components/audioPlaybackController.js') }}"></script>
 
-
-  </a-scene>
+    <!-- Test Script -->
+    <script>
+        document.getElementById('btn-test-urban').addEventListener('click', () => {
+            envInjector.inject('urban');
+        });
+        document.getElementById('btn-test-ocean').addEventListener('click', () => {
+            envInjector.inject('ocean');
+        });
+        document.getElementById('btn-test-forest').addEventListener('click', () => {
+            envInjector.inject('forest');
+        });
+        document.getElementById('btn-test-room').addEventListener('click', () => {
+            envInjector.inject('room');
+        });
+    </script>
 </body>
-<script>
-  const forest = document.querySelector('[forest-generator]');
-  const moon = document.querySelector('#moon');
-  const lanterns = document.querySelector('[lanterns]');
-
-  // Trigger Moon Growth
-  setTimeout(() => {
-    if (moon) moon.emit('start-growth');
-  }, 1000);
-
-  // Trigger Forest Growth
-  setTimeout(() => {
-    if (forest) forest.emit('start-growth');
-  }, 500);
-
-  //Trigger Lanterns
-  setTimeout(() => {
-    console.log("Starting Lanterns...");
-    // Use 'emit' to trigger the event listener we just added
-    if (lanterns) lanterns.emit('start-lanterns');
-  }, 10000);
-
-</script>
 
 </html>

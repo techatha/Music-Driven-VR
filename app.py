@@ -13,11 +13,6 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/upload_v2')
-def upload_v2():
-    return render_template('index2.html')
-
-
 @app.route('/urban')
 def urban_preset():
     return render_template('environments/urban_environment.html')

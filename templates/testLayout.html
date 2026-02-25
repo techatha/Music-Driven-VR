@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Music VR</title>
+  <!-- A-Frame CDN -->
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <!-- Custom Scripts -->
+  <script src="{{ url_for('static', filename='js/components/forestController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/moonController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/starsController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/stageController.js') }}"></script>
+  <!-- New Scene Scripts -->
+  <script src="{{ url_for('static', filename='js/components/waterController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/boatController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/cameraController.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/modelColor.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/waterRipple.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/components/lanterns.js') }}"></script>
+
+</head>
+
+<body>
+  <a-scene fog="type: exponential; color: #050510; density: 0.002">
+
+    <!-- Moon (Keep existing) -->
+    <a-entity id="moon" gltf-model="url({{ url_for('static', filename='assets/3Dmodels/moon/scene_fixed.gltf') }})"
+      position="50 150 -150" scale="1 1 1" moon-controller>
+    </a-entity>
+
+    <!-- Assets -->
+    <a-assets>
+      <img id="sky" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/city.jpg">
+    </a-assets>
+
+    <!-- Environment -->
+    <a-sky color="#050510"></a-sky>
+    <a-entity star-system="count: 5000; radius: 400; color: #FFF"></a-entity>
+
+    <!-- Forest (Background) -->
+    <a-entity
+      forest-generator="count: 40; treeModel: url({{ url_for('static', filename='assets/3Dmodels/pine_tree_fixed.glb') }}); autoStart: true">
+    </a-entity>
+
+
+    <!-- NEW: Water Surface -->
+    <a-entity water-helper="width: 1000; height: 1000"></a-entity>
+
+    <!-- NEW: Lanterns Spawner -->
+    <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
+
+    <!-- NEW: Boat -->
+    <!-- The boat-controller moves this entity. We add an ID so the camera can find it. -->
+    <a-entity id="boat" boat-controller="color: #00FF00" water-ripple position="0 0 0">
+      <!-- Decoration can go here, but NOT the camera -->
+    </a-entity>
+
+    <!-- Player Camera (Detached from boat hierarchy to avoid wiggle) -->
+    <!-- target: #boat; offset: 0 1.6 0.5 (slightly back); copyRotationY: false (stable horizon) -->
+    <a-entity camera-controller="target: #boat; offset: 0 1.6 0.5; copyRotationY: true" position="0 1.6 0"
+      rotation="0 180 0">
+      <!-- Added wrapper for rotation offset if needed, but simple follow is often enough -->
+      <a-camera look-controls wasd-controls="fly: false"></a-camera>
+    </a-entity>
+
+
+    <!-- Lighting -->
+    <a-light type="ambient" color="#222"></a-light>
+    <!-- Moonlight -->
+    <a-light type="directional" position="20 50 -20" color="#aaccff" intensity="0.6"></a-light>
+    <!-- Lantern Warmth -->
+    <a-light type="point" position="0 5 0" color="#ffaa00" intensity="0.5" distance="50"></a-light>
+
+
+    <!-- Floor (Deep underwater floor, barely visible) -->
+    <a-plane position="0 -5 0" rotation="-90 0 0" width="1000" height="1000" color="#000"></a-plane>
+
+
+  </a-scene>
+</body>
+<script>
+  const forest = document.querySelector('[forest-generator]');
+  const moon = document.querySelector('#moon');
+  const lanterns = document.querySelector('[lanterns]');
+
+  // Trigger Moon Growth
+  setTimeout(() => {
+    if (moon) moon.emit('start-growth');
+  }, 1000);
+
+  // Trigger Forest Growth
+  setTimeout(() => {
+    if (forest) forest.emit('start-growth');
+  }, 500);
+
+  //Trigger Lanterns
+  setTimeout(() => {
+    console.log("Starting Lanterns...");
+    // Use 'emit' to trigger the event listener we just added
+    if (lanterns) lanterns.emit('start-lanterns');
+  }, 10000);
+
+</script>
+
+</html>
