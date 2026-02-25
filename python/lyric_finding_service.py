@@ -65,7 +65,12 @@ def scrape_lyrics_from_url(song_url):
         if not containers:
             return None
 
-        print(containers)
+        # === Check ===
+        print("Lyrics scraped: ")
+        for c in containers:
+            print(c)
+        # =============
+
         lyrics = "\n".join(c.get_text(separator="\n") for c in containers)
         return lyrics.split("Read More", 1)[-1].strip()
     

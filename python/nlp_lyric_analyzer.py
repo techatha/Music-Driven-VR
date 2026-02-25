@@ -1,5 +1,4 @@
 import os
-import time
 import pickle
 from sentence_transformers import SentenceTransformer
 
@@ -22,15 +21,14 @@ with open(PRESET_PATH, 'rb') as f:
 def nlp_find_main_preset(lyrics):
     """The heavy nlp lifting happens here."""
 
-    vectorized = sbert_model.encode(lyrics)
+    if not lyrics or not lyrics.strip():
+        return "forest_night_dark"
 
-    time.sleep(10)  # Simulating long process
+    vectorized = sbert_model.encode([lyrics])
+    reduced_vec = reducer.transform(vectorized)
+    cluster_id = int(kmeans.predict(reduced_vec)[0])
 
-    analysis_result = {
-        "bpm": 120,
-        "segments": ["intro", "chorus", "outro"],
-        "clusters": [1, 0, 2]  # Example lyric clusters
-    }
+    analysis_result = preset_map.get(cluster_id, "forest_night_dark")
 
     return analysis_result
 

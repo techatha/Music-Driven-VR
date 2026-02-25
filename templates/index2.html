@@ -9,171 +9,66 @@
 </head>
 
 <body>
+    <!-- UI Layer -->
+    <div id="ui-layer">
+        <div class="container">
+            <h1>Music Analysis</h1>
 
-    <div class="container">
-        <h1>Music Analysis</h1>
-
-        <div class="upload-area" id="drop-zone">
-            <div class="upload-icon">🎵</div>
-            <p>Drag & Drop your MP3 file here</p>
-            <p style="font-size: 0.8em; opacity: 0.6;">or click to browse</p>
-            <input type="file" id="file-input" accept=".mp3,audio/*">
-        </div>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Analyzing... Extracting metadata, running Shazam, and finding lyrics...</p>
-        </div>
-
-        <div class="error-msg" id="error-msg"></div>
-
-        <div class="result-section" id="result-section">
-            <div class="track-info">
-                <img src="" alt="Cover Art" class="cover-art" id="cover-art">
-                <div class="meta-text">
-                    <h2 id="track-title">Unknown Title</h2>
-                    <p><strong>Artist:</strong> <span id="track-artist">Unknown Artist</span></p>
-                    <p><strong>Album:</strong> <span id="track-album">-</span></p>
-                    <p><strong>Source:</strong> <span id="data-source">-</span></p>
-                </div>
+            <div class="upload-area" id="drop-zone">
+                <div class="upload-icon">🎵</div>
+                <p>Drag & Drop your MP3 file here</p>
+                <p style="font-size: 0.8em; opacity: 0.6;">or click to browse</p>
+                <input type="file" id="file-input" accept=".mp3,audio/*" style="display: none;">
             </div>
 
-            <h3>Lyrics</h3>
-            <div class="lyrics-box" id="lyrics-box">
-                No lyrics found.
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p id="loading-text">Analyzing... Extracting metadata, running Shazam, and finding lyrics...</p>
+            </div>
+
+            <div class="error-msg" id="error-msg" style="display: none;"></div>
+
+            <div class="result-section" id="result-section" style="display: none;">
+                <div class="track-info">
+                    <img src="" alt="Cover Art" class="cover-art" id="cover-art">
+                    <div class="meta-text">
+                        <h2 id="track-title">Unknown Title</h2>
+                        <p><strong>Artist:</strong> <span id="track-artist">Unknown Artist</span></p>
+                        <p><strong>Album:</strong> <span id="track-album">-</span></p>
+                        <p><strong>Source:</strong> <span id="data-source">Shazam / Genius</span></p>
+                    </div>
+                </div>
+
+                <h3>Lyrics (Verify & Edit)</h3>
+                <textarea class="lyrics-box" id="lyrics-box" rows="12"
+                    style="width: 100%; border-radius: 8px; padding: 10px; font-family: inherit; resize: vertical;"></textarea>
+
+                <button id="confirm-btn"
+                    style="display: none; padding: 10px 20px; font-size: 16px; margin-top: 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
+                    Play & Start VR Generation
+                </button>
             </div>
         </div>
     </div>
 
-    <script>
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-input');
-        const loading = document.getElementById('loading');
-        const resultSection = document.getElementById('result-section');
-        const errorMsg = document.getElementById('error-msg');
+    <!-- VR Layer (Hidden initially) -->
+    <div id="vr-layer" style="display: none;">
+        <a-scene music-manager>
+            <a-entity id="environment-root"></a-entity>
+        </a-scene>
+    </div>
 
-        // Drag & Drop Handlers
-        dropZone.addEventListener('click', () => fileInput.click());
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename='js/EnvironmentInjector.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/AudioStateManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                handleFile(e.dataTransfer.files[0]);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (fileInput.files.length) {
-                handleFile(fileInput.files[0]);
-            }
-        });
-
-        function handleFile(file) {
-            // Reset UI
-            resultSection.style.display = 'none';
-            errorMsg.style.display = 'none';
-            loading.style.display = 'block';
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            fetch('/api/analyze', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        loading.style.display = 'none';
-                        showError(data.error);
-                    } else {
-                        pollJobStatus(data.job_id);
-                    }
-                })
-                .catch(err => {
-                    loading.style.display = 'none';
-                    showError("Network or Server Error: " + err.message);
-                });
-        }
-
-        function pollJobStatus(jobId) {
-            fetch(`/api/status/${jobId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'done') {
-                        // Step 3: It's done! Fetch the final result
-                        fetchFinalResult(jobId);
-                    } else if (data.status === 'error') {
-                        loading.style.display = 'none';
-                        showError("The backend encountered an error while processing the music.");
-                    } else {
-                        // If 'queued' or 'running', wait 2 seconds and ask again
-                        setTimeout(() => {
-                            pollJobStatus(jobId);
-                        }, 2000);
-                    }
-                })
-                .catch(err => {
-                    loading.style.display = 'none';
-                    showError("Polling Error: " + err.message);
-                });
-        }
-
-        function fetchFinalResult(jobId) {
-            fetch(`/api/analysis/${jobId}`)
-                .then(response => response.json())
-                .then(data => {
-                    loading.style.display = 'none';
-                    if (data.error) {
-                        showError(data.error);
-                    } else {
-                        showResult(data);
-                    }
-                })
-                .catch(err => {
-                    loading.style.display = 'none';
-                    showError("Result Fetch Error: " + err.message);
-                });
-        }
-
-        // fetchFinalResult() helper
-        function showError(msg) {
-            errorMsg.textContent = msg;
-            errorMsg.style.display = 'block';
-        }
-
-        // fetchFinalResult() helper ()
-        function showResult(data) {
-            console.log(data);
-            const songInfo = data.songInfo
-            document.getElementById('track-title').textContent = songInfo.title || "Unknown Title";
-            document.getElementById('track-artist').textContent = songInfo.artist || "Unknown Artist";
-            document.getElementById('track-album').textContent = songInfo.album || "-";
-
-            const coverImg = document.getElementById('cover-art');
-            if (songInfo.cover_art) {
-                coverImg.src = songInfo.cover_art;
-            } else {
-                coverImg.src = 'https://via.placeholder.com/150?text=No+Cover';
-            }
-
-            const lyricsBox = document.getElementById('lyrics-box');
-            lyricsBox.textContent = songInfo.lyrics || "Lyrics not found.";
-
-            resultSection.style.display = 'block';
-        }
-    </script>
-
+    <!-- Audio Playback Controller -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/audioPlaybackController.css') }}">
+    <script src="{{ url_for('static', filename='js/components/audioPlaybackController.js') }}"></script>
 </body>
 
 </html>

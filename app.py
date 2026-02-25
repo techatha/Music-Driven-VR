@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request
-from python.job_manager import jobs, init_job
+from python.job_manager import jobs, scraping_lyric_job, analysis_job
 import os
 import tempfile
 
@@ -54,8 +54,38 @@ def analyze_music_api():
     file.save(temp_path)
 
     # Run analysis
-    job_id = init_job(temp_path)
+    job_id = scraping_lyric_job(temp_path)
     return jsonify({"job_id": job_id, "status": "queued"}), 202
+
+
+@app.route('/api/startAnalyze/<job_id>', methods=['POST'])
+def start_analysis(job_id):
+    # Get JSON safely (defaults to empty dict if no JSON is sent)
+    data = request.get_json() or {}
+
+    # Grab lyrics if they exist, otherwise default to an empty string
+    submitted_lyrics = data.get('lyrics', "").strip()
+
+    # Trigger Phase 2
+    success, message = analysis_job(job_id, submitted_lyrics)
+
+    if not success:
+        return jsonify({"error": message}), 400
+
+    return jsonify({"status": "queued_analysis", "message": message}), 200
+
+
+@app.route('/api/getSongInfo/<job_id>', methods=['GET'])
+def get_lyrics(job_id):
+    job = jobs.get(job_id)
+    if not job:
+        return jsonify({"error": "Job not found"}), 404
+    if job['status'] == 'queued_lyrics':
+        return jsonify({"error": "Job is queued but still not processed"}), 400
+    if job['status'] == 'running_lyrics':
+        return jsonify({"error": "Job is processing"}), 400
+
+    return jsonify(job['song_info']), 200
 
 
 @app.route('/api/status/<job_id>', methods=['GET'])
@@ -66,8 +96,8 @@ def get_status(job_id):
     return jsonify({"status": job['status']})
 
 
-@app.route('/api/analysis/<job_id>', methods=['GET'])
-def get_analysis(job_id):
+@app.route('/api/result/<job_id>', methods=['GET'])
+def get_analysis_result(job_id):
     job = jobs.get(job_id)
     if not job:
         return jsonify({"error": "Job not found"}), 404
@@ -78,4 +108,4 @@ def get_analysis(job_id):
 
 if __name__ == '__main__':
     debug = True  # enables the reloader and debugger
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=8080)
