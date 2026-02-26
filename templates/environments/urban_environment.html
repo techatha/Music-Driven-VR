@@ -5,8 +5,7 @@
     <title>Music VR - Urban Preset</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script type="module" src="{{ url_for('static', filename='js/components/urban-environment.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/components/city-generator.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/components/street-lights.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/procedural-building.js') }}"></script>
     <!-- Audio Playback Controller -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/audioPlaybackController.css') }}">
     <script src="{{ url_for('static', filename='js/components/audioPlaybackController.js') }}"></script>
@@ -14,32 +13,14 @@
 
 <body>
     <a-scene>
-        <a-assets>
-            <a-asset-item id="building01"
-                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_01/scene.gltf') }}"></a-asset-item>
-            <a-asset-item id="building02"
-                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_02/scene.gltf') }}"></a-asset-item>
-            <a-asset-item id="building03"
-                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_03/scene.gltf') }}"></a-asset-item>
-            <a-asset-item id="building05"
-                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_05/scene.gltf') }}"></a-asset-item>
-            <a-asset-item id="building06"
-                src="{{ url_for('static', filename='assets/3Dmodels/buildings/building_06/scene.gltf') }}"></a-asset-item>
-            <a-asset-item id="street-light"
-                src="{{ url_for('static', filename='assets/3Dmodels/street_light/scene.gltf') }}"></a-asset-item>
-        </a-assets>
-
         <!-- Urban Environment Component -->
         <a-entity urban-environment></a-entity>
 
-        <!-- City Block Component -->
-        <a-entity city-block="width: 30; depth: 100"></a-entity>
-
-        <!-- Street Lights Component -->
-        <a-entity street-lights="width: 15; depth: 100"></a-entity>
+        <!-- Single Procedural Building for Preview -->
+        <a-entity procedural-building position="0 0 0"></a-entity>
 
         <!-- Player Rig -->
-        <a-entity id="rig" position="0 1.6 0">
+        <a-entity id="rig" position="0 1.6 30">
             <a-entity camera look-controls wasd-controls position="0 0 0"></a-entity>
         </a-entity>
 

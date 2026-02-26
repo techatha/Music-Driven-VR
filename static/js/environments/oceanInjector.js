@@ -13,5 +13,10 @@ function injectOceanEnvironment(rootElement) {
 
         <!-- Ship Y -->
         <a-entity ship-y-controller position="0 -20 0" scale="40 40 40"></a-entity>
+
+        <!-- Player Rig -->
+        <a-entity id="rig" position="0 1.6 0">
+            <a-entity camera look-controls wasd-controls position="0 0 0"></a-entity>
+        </a-entity>
     `;
 }

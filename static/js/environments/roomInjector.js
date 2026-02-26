@@ -28,8 +28,10 @@ function injectRoomEnvironment(rootElement) {
 
         <a-box position="0 6 10" width="20" height="12" depth="0.1" color="#F5F5DC"></a-box> <!-- Front Wall -->
 
-        <!-- Outdoor Environment (Skybox) -->
-        <a-sky color="#050510"></a-sky> <!-- Dark tone for better blending -->
+        <!-- Sky (via sky-controller) -->
+        <a-entity sky-controller="type: gradient; startTime: night"></a-entity>
+        <a-sky material="shader: gradient-shader; topColor: #020205; bottomColor: #050510; offset: 400; exponent: 0.6"></a-sky>
+        <a-entity star-system="count: 1000; radius: 400; color: #FFF"></a-entity>
 
         <!-- Rug -->
         <a-circle position="0 0.01 0" rotation="-90 0 0" radius="3" color="#800000"></a-circle>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Procedural Building Test</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="static/js/components/procedural-building.js"></script>
+</head>
+
+<body>
+    <a-scene background="color: #050505" fog="type: linear; color: #101015; near: 10; far: 120">
+
+        <!-- Ground -->
+        <a-plane rotation="-90 0 0" width="200" height="200" color="#111"></a-plane>
+
+        <!-- Procedural Building at origin -->
+        <a-entity procedural-building position="0 0 0"></a-entity>
+
+        <!-- Ambient light -->
+        <a-entity light="type: ambient; color: #222; intensity: 0.4"></a-entity>
+
+        <!-- Player Rig -->
+        <a-entity id="rig" position="0 1.6 35">
+            <a-entity camera look-controls wasd-controls position="0 0 0"></a-entity>
+        </a-entity>
+    </a-scene>
+</body>
+
+</html>
