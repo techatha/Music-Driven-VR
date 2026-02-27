@@ -26,19 +26,79 @@ class AudioStateManager {
         // Create a temporary, high-speed URL directly from browser RAM
         this.audioUrl = URL.createObjectURL(this.audioFile);
 
-        // Hide Upload UI, Show VR Scene
-        document.getElementById('ui-layer').style.display = 'none';
-        document.getElementById('vr-layer').style.display = 'block';
+        const preset = this.analysisData.mainEnvironment || "forest_night_dark";
+        console.log("🚀 [AudioStateManager] Using preset:", preset);
 
-        const preset = this.analysisData.mainEnvironment || "room_evening_dark";
+        // Show loading status in UI
+        const loadingText = document.getElementById('loading-text');
+        if (loadingText) loadingText.textContent = "Constructing 3D Environment...";
+
+        // Inject the chosen environment
         envInjector.inject(preset);
+
+        // Apply sky and floor theme if preset has at least two parts (e.g. "ocean_morning" or "room_evening_dark")
+        const parts = preset.split('_');
+        if (parts.length >= 2) {
+            const skyTime = parts[1]; // e.g. "evening" or "morning"
+
+            // Map the semantic description from the backend to the exact A-Frame component names
+            let floorPreset = null;
+            if (parts.length >= 3) {
+                const floorDesc = parts[2]; // e.g. "dark"
+                if (floorDesc.includes('dark')) floorPreset = 'void';
+                else if (floorDesc.includes('snow') || floorDesc.includes('white')) floorPreset = 'snow';
+                else if (floorDesc.includes('glass') || floorDesc.includes('reflective')) floorPreset = 'glass';
+            }
+
+            // Allow time for A-Frame components to mount before emitting the theme events
+            setTimeout(() => {
+                console.log("🚀 [AudioStateManager] Setting theme:", skyTime, floorPreset);
+                console.log(window.sceneTheme);
+                if (window.sceneTheme) {
+                    if (floorPreset && floorPreset !== 'null') {
+                        window.sceneTheme.setTheme(skyTime, floorPreset);
+                    } else {
+                        window.sceneTheme.setSky(skyTime);
+                        console.log("🚀dmjdk [AudioStateManager] Setting sky theme:", skyTime);
+                    }
+                }
+            }, 500);
+        }
+
+        const root = document.getElementById('environment-root');
+
+        // Listen for model-loaded event and use 1500ms fallback
+        let fallbackTimeout = setTimeout(() => {
+            console.warn("VR Environment model-loaded event did not fire (or timeout). Forcing start...");
+            this.launchExperience();
+        }, 1500);
+
+        if (root) {
+            root.addEventListener('model-loaded', () => {
+                clearTimeout(fallbackTimeout);
+                this.launchExperience();
+            }, { once: true });
+        }
+    }
+
+    launchExperience() {
+        // Hide Upload UI, Show VR Scene
+        const uiLayer = document.getElementById('ui-layer');
+        if (uiLayer) uiLayer.style.display = 'none';
+
+        const vrLayer = document.getElementById('vr-layer');
+        if (vrLayer) vrLayer.style.display = 'block';
 
         // Tell the A-Frame Music Manager to start playing
         const managerEntity = document.querySelector('[music-manager]');
-        managerEntity.components['music-manager'].startExperience(
-            this.analysisData,
-            this.audioUrl
-        );
+        if (managerEntity && managerEntity.components['music-manager']) {
+            managerEntity.components['music-manager'].startExperience(
+                this.analysisData,
+                this.audioUrl
+            );
+        } else {
+            console.error('music-manager component not found!');
+        }
     }
 
     // Optional: Cleanup if they exit VR

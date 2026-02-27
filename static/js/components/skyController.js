@@ -50,24 +50,24 @@ AFRAME.registerComponent('sky-controller', {
         this.ambientLight = document.querySelector('a-light[type="ambient"]');
 
         // Bind methods
-        this.setMorning = this.setMorning.bind(this);
+        this.setDay = this.setDay.bind(this);
         this.setEvening = this.setEvening.bind(this);
         this.setNight = this.setNight.bind(this);
-        this.setSunset = this.setSunset.bind(this);
+        this.setMorning = this.setMorning.bind(this);
 
         // Event Listeners
-        this.el.addEventListener('set-morning', this.setMorning);
+        this.el.addEventListener('set-day', this.setDay);
         this.el.addEventListener('set-evening', this.setEvening);
         this.el.addEventListener('set-night', this.setNight);
-        this.el.addEventListener('set-sunset', this.setSunset);
+        this.el.addEventListener('set-morning', this.setMorning);
 
         // Initialize based on start time if needed, currently defaults handle it
     },
 
-    setMorning: function () {
-        console.log("Setting Morning...");
+    setDay: function () {
+        console.log("Setting Day...");
         this._clearProcedural();
-        // Bright, foggy morning
+        // Bright, clear daytime sky
         this.updateEnvironment(
             '#87CEEB', // Top Color (SkyBlue)
             '#E6F2FF', // Bottom Color (Light Blue)
@@ -108,8 +108,8 @@ AFRAME.registerComponent('sky-controller', {
         );
     },
 
-    setSunset: function () {
-        console.log("Setting Sunset (Procedural)...");
+    setMorning: function () {
+        console.log("Setting Morning (Procedural)...");
         // Hide the gradient sky so procedural sky shows through
         if (this.sky) this.sky.setAttribute('visible', false);
 

@@ -33,7 +33,7 @@
     align-items: center;
     padding: 0 20px;
     gap: 14px;
-    z-index: 99999;
+    z-index: 2147483647;
     font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: var(--player-text);
     transition: opacity 0.4s ease, transform 0.4s ease;

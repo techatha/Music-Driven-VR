@@ -6,11 +6,11 @@
  * 
  * Usage:
  *   From JS:
- *     sceneTheme.setTheme('morning', 'snow');
+ *     sceneTheme.setTheme('day', 'snow');
  *     sceneTheme.setTheme('night', 'void');
  *     sceneTheme.setTheme('evening', 'glass');
  *     sceneTheme.setTheme('morning', 'custom', '#ff6600');
- *     sceneTheme.setSky('morning');
+ *     sceneTheme.setSky('day');
  *     sceneTheme.setFloor('snow');
  */
 class SceneThemeController {
@@ -29,7 +29,7 @@ class SceneThemeController {
 
     /**
      * Set both sky and floor in one call.
-     * @param {'morning'|'evening'|'night'|'sunset'} sky - Sky time preset
+     * @param {'day'|'evening'|'night'|'morning'} sky - Sky time preset
      * @param {'snow'|'glass'|'void'|'custom'} floor - Floor preset
      * @param {string} [customColor] - Hex color for 'custom' floor
      */
@@ -42,17 +42,17 @@ class SceneThemeController {
 
     /**
      * Set the sky time.
-     * @param {'morning'|'evening'|'night'|'sunset'} time
+     * @param {'day'|'evening'|'night'|'morning'} time
      */
     setSky(time) {
         const { skyEl } = this._findElements();
         if (!skyEl) { console.warn('SceneThemeController: sky-controller not found'); return; }
 
         const eventMap = {
-            morning: 'set-morning',
+            day: 'set-day',
             evening: 'set-evening',
             night: 'set-night',
-            sunset: 'set-sunset'
+            morning: 'set-morning'
         };
 
         const event = eventMap[time];
@@ -97,4 +97,4 @@ class SceneThemeController {
 }
 
 // Global instance
-const sceneTheme = new SceneThemeController();
+window.sceneTheme = new SceneThemeController();

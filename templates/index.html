@@ -9,6 +9,7 @@
 
     <!-- A-Frame MUST be loaded before any A-Frame components -->
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="{{ url_for('static', filename='js/music-manager.js') }}"></script>
 
     <!-- Environment Component Library -->
     <script
@@ -42,9 +43,6 @@
     <script type="module" src="{{ url_for('static', filename='js/components/urban-environment.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/components/city-generator.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/components/street-lights.js') }}"></script>
-
-    <!-- Scene Theme Controller -->
-    <script src="{{ url_for('static', filename='js/components/sceneThemeController.js') }}"></script>
 </head>
 
 <body>
@@ -56,20 +54,21 @@
         <button id="btn-test-forest" style="padding: 10px; cursor: pointer;">Test Forest</button>
         <button id="btn-test-room" style="padding: 10px; cursor: pointer;">Test Room</button>
         <span style="width: 100%;"></span>
-        <button id="btn-theme-morning-snow" style="padding: 8px; cursor: pointer; background: #87CEEB;">☀️ Morning +
+        <button id="btn-theme-day-snow" style="padding: 8px; cursor: pointer; background: #87CEEB;">☀️ Day +
             Snow</button>
         <button id="btn-theme-evening-glass" style="padding: 8px; cursor: pointer; background: #FF7F50;">🌅 Evening +
             Glass</button>
         <button id="btn-theme-night-void" style="padding: 8px; cursor: pointer; background: #222; color: #fff;">🌙 Night
             + Void</button>
+        <button id="btn-theme-morning" style="padding: 8px; cursor: pointer; background: #ff9900; color: #fff;">🌄
+            Morning</button>
         <button id="btn-theme-custom" style="padding: 8px; cursor: pointer; background: #ff6600; color: #fff;">🎨 Custom
             Floor</button>
-        <button id="btn-theme-sunset" style="padding: 8px; cursor: pointer; background: #ff9900; color: #fff;">🌇
-            Sunset</button>
     </div>
 
     <!-- UI Layer -->
-    <div id="ui-layer" style="display: none;">
+    <div id="ui-layer"
+        style="display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100vh; z-index: 9999; justify-content: center; align-items: flex-start; overflow-y: auto; background: linear-gradient(135deg, #1e1e2f 0%, #252540 100%);">
         <div class="container">
             <h1>Music Analysis</h1>
 
@@ -127,17 +126,13 @@
                     src="/static/assets/3Dmodels/buildings/building_06/scene.gltf"></a-asset-item>
                 <a-asset-item id="street-light" src="/static/assets/3Dmodels/street_light/scene.gltf"></a-asset-item>
                 <!-- Ocean -->
-                <img id="waterNormal"
-                    src="https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/water/Water_1_M_Normal.jpg">
+                <img id="waterNormal" src="/static/assets/Water_1_M_Normal.jpg">
                 <!-- Forest -->
-                <img id="sky" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/city.jpg">
+                <img id="sky" src="/static/assets/city.jpg">
             </a-assets>
 
             <a-entity id="environment-root"></a-entity>
         </a-scene>
-    </div>
-
-    </a-scene>
     </div>
 
     <!-- Custom Scripts -->
@@ -147,7 +142,8 @@
     <script src="{{ url_for('static', filename='js/environments/forestInjector.js') }}"></script>
     <script src="{{ url_for('static', filename='js/environments/roomInjector.js') }}"></script>
 
-    <!-- Main Injector -->
+    <!-- Main Controllers & App Logic -->
+    <script src="{{ url_for('static', filename='js/components/sceneThemeController.js') }}"></script>
     <script src="{{ url_for('static', filename='js/EnvironmentInjector.js') }}"></script>
     <script src="{{ url_for('static', filename='js/AudioStateManager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
@@ -172,8 +168,8 @@
         });
 
         // Theme buttons
-        document.getElementById('btn-theme-morning-snow').addEventListener('click', () => {
-            sceneTheme.setTheme('morning', 'snow');
+        document.getElementById('btn-theme-day-snow').addEventListener('click', () => {
+            sceneTheme.setTheme('day', 'snow');
         });
         document.getElementById('btn-theme-evening-glass').addEventListener('click', () => {
             sceneTheme.setTheme('evening', 'glass');
@@ -181,11 +177,11 @@
         document.getElementById('btn-theme-night-void').addEventListener('click', () => {
             sceneTheme.setTheme('night', 'void');
         });
-        document.getElementById('btn-theme-custom').addEventListener('click', () => {
-            sceneTheme.setTheme('morning', 'custom', '#ff6600');
+        document.getElementById('btn-theme-morning').addEventListener('click', () => {
+            sceneTheme.setSky('morning');
         });
-        document.getElementById('btn-theme-sunset').addEventListener('click', () => {
-            sceneTheme.setSky('sunset');
+        document.getElementById('btn-theme-custom').addEventListener('click', () => {
+            sceneTheme.setTheme('day', 'custom', '#ff6600');
         });
     </script>
 </body>
