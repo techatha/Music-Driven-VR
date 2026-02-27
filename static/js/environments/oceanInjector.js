@@ -1,7 +1,9 @@
 function injectOceanEnvironment(rootElement) {
     rootElement.innerHTML = `
-        <!-- Procedural Sunset via Sky Controller -->
-        <a-entity sky-controller="type: procedural"></a-entity>
+        <!-- Sky (via sky-controller — starts as sunset) -->
+        <a-entity sky-controller="type: gradient; startTime: sunset"></a-entity>
+        <a-sky material="shader: gradient-shader; topColor: #331133; bottomColor: #ff9900; offset: 400; exponent: 0.6"></a-sky>
+        <a-entity star-system="count: 1000; radius: 400; color: #FFF"></a-entity>
 
         <!-- Manually adding ambient light to ensure models aren't too dark vs the backend -->
         <a-light type="ambient" color="#222"></a-light>
@@ -13,6 +15,10 @@ function injectOceanEnvironment(rootElement) {
 
         <!-- Ship Y -->
         <a-entity ship-y-controller position="0 -20 0" scale="40 40 40"></a-entity>
+
+        <!-- Floor -->
+        <a-plane position="0 -30 0" rotation="-90 0 0" width="1000" height="1000"
+            multi-color-floor="preset: none"></a-plane>
 
         <!-- Player Rig -->
         <a-entity id="rig" position="0 1.6 0">

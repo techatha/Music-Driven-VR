@@ -53,18 +53,20 @@ AFRAME.registerComponent('sky-controller', {
         this.setMorning = this.setMorning.bind(this);
         this.setEvening = this.setEvening.bind(this);
         this.setNight = this.setNight.bind(this);
+        this.setSunset = this.setSunset.bind(this);
 
         // Event Listeners
         this.el.addEventListener('set-morning', this.setMorning);
         this.el.addEventListener('set-evening', this.setEvening);
         this.el.addEventListener('set-night', this.setNight);
+        this.el.addEventListener('set-sunset', this.setSunset);
 
         // Initialize based on start time if needed, currently defaults handle it
     },
 
     setMorning: function () {
-        if (this.data.type === 'procedural') return; // Not supported for procedural yet
         console.log("Setting Morning...");
+        this._clearProcedural();
         // Bright, foggy morning
         this.updateEnvironment(
             '#87CEEB', // Top Color (SkyBlue)
@@ -78,8 +80,8 @@ AFRAME.registerComponent('sky-controller', {
     },
 
     setEvening: function () {
-        if (this.data.type === 'procedural') return;
         console.log("Setting Evening...");
+        this._clearProcedural();
         // Warm sunset gradient
         this.updateEnvironment(
             '#4B0082', // Top: Indigo
@@ -93,9 +95,8 @@ AFRAME.registerComponent('sky-controller', {
     },
 
     setNight: function () {
-        if (this.data.type === 'procedural') return;
         console.log("Setting Night...");
-        // Dark, moody night
+        this._clearProcedural();
         this.updateEnvironment(
             '#020205', // Top: Deep Black/Blue
             '#050510', // Bottom: Dark Blue
@@ -105,6 +106,40 @@ AFRAME.registerComponent('sky-controller', {
             0.6,       // Sun Intensity
             0.002      // Fog Density
         );
+    },
+
+    setSunset: function () {
+        console.log("Setting Sunset (Procedural)...");
+        // Hide the gradient sky so procedural sky shows through
+        if (this.sky) this.sky.setAttribute('visible', false);
+
+        // Create procedural entity once, reuse on subsequent calls
+        if (!this._proceduralEl) {
+            this._proceduralEl = document.createElement('a-entity');
+            this._proceduralEl.setAttribute('environment', {
+                preset: 'arches',
+                skyType: 'atmosphere',
+                lighting: 'distant',
+                ground: 'none',
+                horizonColor: '#ff9900',
+                skyColor: '#331133',
+                dressing: 'none',
+                fog: 0.02
+            });
+            this._proceduralEl.setAttribute('scale', '5 5 5');
+            this._proceduralEl.setAttribute('environment', 'lightPosition', '-1 2 -5');
+            this.el.sceneEl.appendChild(this._proceduralEl);
+        }
+        this._proceduralEl.setAttribute('visible', true);
+    },
+
+    _clearProcedural: function () {
+        // Just hide the procedural entity (don't destroy it)
+        if (this._proceduralEl) {
+            this._proceduralEl.setAttribute('visible', false);
+        }
+        // Show the gradient sky again
+        if (this.sky) this.sky.setAttribute('visible', true);
     },
 
     updateEnvironment: function (skyTopColor, skyBottomColor, fogColor, directLightColor, ambientColor, intensity, fogDensity) {

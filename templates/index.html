@@ -42,15 +42,30 @@
     <script type="module" src="{{ url_for('static', filename='js/components/urban-environment.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/components/city-generator.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/components/street-lights.js') }}"></script>
+
+    <!-- Scene Theme Controller -->
+    <script src="{{ url_for('static', filename='js/components/sceneThemeController.js') }}"></script>
 </head>
 
 <body>
     <!-- Temporary Test Buttons -->
-    <div id="test-buttons" style="position: fixed; top: 10px; left: 10px; z-index: 9999; display: flex; gap: 10px;">
+    <div id="test-buttons"
+        style="position: fixed; top: 10px; left: 10px; z-index: 9999; display: flex; gap: 10px; flex-wrap: wrap;">
         <button id="btn-test-urban" style="padding: 10px; cursor: pointer;">Test Urban</button>
         <button id="btn-test-ocean" style="padding: 10px; cursor: pointer;">Test Ocean</button>
         <button id="btn-test-forest" style="padding: 10px; cursor: pointer;">Test Forest</button>
         <button id="btn-test-room" style="padding: 10px; cursor: pointer;">Test Room</button>
+        <span style="width: 100%;"></span>
+        <button id="btn-theme-morning-snow" style="padding: 8px; cursor: pointer; background: #87CEEB;">☀️ Morning +
+            Snow</button>
+        <button id="btn-theme-evening-glass" style="padding: 8px; cursor: pointer; background: #FF7F50;">🌅 Evening +
+            Glass</button>
+        <button id="btn-theme-night-void" style="padding: 8px; cursor: pointer; background: #222; color: #fff;">🌙 Night
+            + Void</button>
+        <button id="btn-theme-custom" style="padding: 8px; cursor: pointer; background: #ff6600; color: #fff;">🎨 Custom
+            Floor</button>
+        <button id="btn-theme-sunset" style="padding: 8px; cursor: pointer; background: #ff9900; color: #fff;">🌇
+            Sunset</button>
     </div>
 
     <!-- UI Layer -->
@@ -154,6 +169,23 @@
         });
         document.getElementById('btn-test-room').addEventListener('click', () => {
             envInjector.inject('room');
+        });
+
+        // Theme buttons
+        document.getElementById('btn-theme-morning-snow').addEventListener('click', () => {
+            sceneTheme.setTheme('morning', 'snow');
+        });
+        document.getElementById('btn-theme-evening-glass').addEventListener('click', () => {
+            sceneTheme.setTheme('evening', 'glass');
+        });
+        document.getElementById('btn-theme-night-void').addEventListener('click', () => {
+            sceneTheme.setTheme('night', 'void');
+        });
+        document.getElementById('btn-theme-custom').addEventListener('click', () => {
+            sceneTheme.setTheme('morning', 'custom', '#ff6600');
+        });
+        document.getElementById('btn-theme-sunset').addEventListener('click', () => {
+            sceneTheme.setSky('sunset');
         });
     </script>
 </body>

@@ -25,8 +25,8 @@ AFRAME.registerComponent('multi-color-floor', {
         this.el.setAttribute('material', {
             shader: 'standard',
             color: '#00FF00',
-            opacity: 0.3,
-            transparent: true,
+            opacity: 1.0,
+            transparent: false,
             roughness: 0.1,
             metalness: 0.1,
             side: 'double'

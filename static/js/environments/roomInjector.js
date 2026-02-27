@@ -1,9 +1,12 @@
 function injectRoomEnvironment(rootElement) {
     rootElement.innerHTML = `
         <!-- Basic Room Structure -->
-        <!-- Floor -->
+        <!-- Floor (Wooden) -->
         <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#8B4513"
             material="roughness: 0.8"></a-plane>
+        <!-- Multi-Color Floor (below room, visible from window) -->
+        <a-plane position="0 -1 0" rotation="-90 0 0" width="5000" height="5000"
+            multi-color-floor="preset: none"></a-plane>
 
         <!-- Ceiling (Height 12) -->
         <a-plane position="0 12 0" rotation="90 0 0" width="20" height="20" color="#F5F5DC"></a-plane>
