@@ -1,14 +1,15 @@
 function injectUrbanEnvironment(rootElement) {
     rootElement.innerHTML = `
         <!-- Lighting -->
-        <a-light type="ambient" color="#334" intensity="0.6"></a-light>
-        <a-light type="directional" color="#ffe0c0" intensity="1.0" position="1 3 2"></a-light>
-        <a-light type="directional" color="#8090ff" intensity="0.3" position="-1 2 -1"></a-light>
+        <a-entity scene-lighting="preset: urban"></a-entity>
 
         <!-- Sky -->
         <a-entity sky-controller="type: gradient; startTime: night"></a-entity>
         <a-sky material="shader: gradient-shader; topColor: #020205; bottomColor: #0a0a15; offset: 400; exponent: 0.6"></a-sky>
         <a-entity star-system="count: 2000; radius: 400; color: #FFF"></a-entity>
+
+        <!-- Particles (Stars/Dust) -->
+        <a-entity custom-particles="type: stars; count: 1000; color: #ffffff" position="0 20 0"></a-entity>
 
         <!-- Road Component -->
         <a-entity urban-road></a-entity>

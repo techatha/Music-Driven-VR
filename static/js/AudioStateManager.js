@@ -23,6 +23,16 @@ class AudioStateManager {
             return;
         }
 
+        // Auto-generate Semantic Cues for testing if the API returned an empty array
+        if (!this.analysisData.semanticCues || this.analysisData.semanticCues.length === 0) {
+            console.log("No semantic cues from backend. Generating fallbacks to test Semantic mode constraints...");
+            this.analysisData.semanticCues = [
+                { time: 10, preset: "test_evening_glass" }, // 10 seconds in -> Sky: evening, Floor: glass
+                { time: 25, preset: "test_night_void" },    // 25 seconds in -> Sky: night, Floor: void
+                { time: 40, preset: "test_morning_snow" }   // 40 seconds in -> Sky: morning, Floor: snow
+            ];
+        }
+
         // Create a temporary, high-speed URL directly from browser RAM
         this.audioUrl = URL.createObjectURL(this.audioFile);
 
@@ -53,13 +63,12 @@ class AudioStateManager {
             // Allow time for A-Frame components to mount before emitting the theme events
             setTimeout(() => {
                 console.log("🚀 [AudioStateManager] Setting theme:", skyTime, floorPreset);
-                console.log(window.sceneTheme);
                 if (window.sceneTheme) {
                     if (floorPreset && floorPreset !== 'null') {
                         window.sceneTheme.setTheme(skyTime, floorPreset);
                     } else {
                         window.sceneTheme.setSky(skyTime);
-                        console.log("🚀dmjdk [AudioStateManager] Setting sky theme:", skyTime);
+                        console.log("🚀 [AudioStateManager] Setting sky theme:", skyTime);
                     }
                 }
             }, 500);
@@ -88,6 +97,38 @@ class AudioStateManager {
 
         const vrLayer = document.getElementById('vr-layer');
         if (vrLayer) vrLayer.style.display = 'block';
+
+        // Listen for mid-song semantic environment shifts from music-manager
+        const sceneEl = document.querySelector('a-scene');
+        if (sceneEl && !this.listeningForCues) {
+            sceneEl.addEventListener('audio-semantic-cue', (e) => {
+                const cue = e.detail.cue;
+                console.log("🎵 Semantic Cue Triggered:", cue.preset);
+
+                // Parse the preset exactly like startVR() does
+                const parts = cue.preset.split('_');
+                if (parts.length >= 2) {
+                    const skyTime = parts[1]; // e.g. "evening" or "morning"
+
+                    let floorPreset = null;
+                    if (parts.length >= 3) {
+                        const floorDesc = parts[2]; // e.g. "dark"
+                        if (floorDesc.includes('dark') || floorDesc.includes('void')) floorPreset = 'void';
+                        else if (floorDesc.includes('snow') || floorDesc.includes('white')) floorPreset = 'snow';
+                        else if (floorDesc.includes('glass') || floorDesc.includes('reflective')) floorPreset = 'glass';
+                    }
+
+                    if (window.sceneTheme) {
+                        if (floorPreset && floorPreset !== 'null') {
+                            window.sceneTheme.setTheme(skyTime, floorPreset);
+                        } else {
+                            window.sceneTheme.setSky(skyTime);
+                        }
+                    }
+                }
+            });
+            this.listeningForCues = true;
+        }
 
         // Tell the A-Frame Music Manager to start playing
         const managerEntity = document.querySelector('[music-manager]');

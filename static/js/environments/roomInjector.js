@@ -69,6 +69,9 @@ function injectRoomEnvironment(rootElement) {
 
         <!-- Fireplace -->
         <a-entity fireplace-controller position="0 0 9.217" rotation="0 180 0"></a-entity>
+        
+        <!-- Particles (Sparks escaping fireplace) -->
+        <a-entity custom-particles="type: sparks; count: 100; color: #ff8800" position="0 0.5 8.5"></a-entity>
 
         <!-- Window Frame -->
         <a-box position="10 5 0" width="0.2" height="4.2" depth="5.2" color="#8B4513" visible="false"></a-box>
@@ -82,11 +85,8 @@ function injectRoomEnvironment(rootElement) {
         <a-plane position="10 5 0" rotation="0 -90 0" width="5" height="4" color="#87CEEB" opacity="0.2"
             material="transparent: true"></a-plane>
 
-        <!-- Lighting (Cozy Warmth) -->
-        <a-light type="ambient" color="#FFF" intensity="0.3"></a-light>
-
-        <!-- Central Warmth -->
-        <a-light type="point" position="0 10 0" color="#FFA500" intensity="0.5" distance="25" decay="2"></a-light>
+        <!-- Lighting (Cozy Warmth & Music Flash) -->
+        <a-entity scene-lighting="preset: room"></a-entity>
 
         <!-- Camera -->
         <a-entity position="0 1.6 4">

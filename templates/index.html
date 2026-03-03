@@ -20,6 +20,9 @@
     <script src="{{ url_for('static', filename='js/components/skyController.js') }}"></script>
     <script src="{{ url_for('static', filename='js/GradientShader.js') }}"></script>
     <script src="{{ url_for('static', filename='js/components/multiColorFloor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/musicReactor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/sceneLighting.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/components/customParticles.js') }}"></script>
 
     <!-- Forest & Sky Components -->
     <script src="{{ url_for('static', filename='js/components/forestController.js') }}"></script>
@@ -77,6 +80,18 @@
                 <p>Drag & Drop your MP3 file here</p>
                 <p style="font-size: 0.8em; opacity: 0.6;">or click to browse</p>
                 <input type="file" id="file-input" accept=".mp3,audio/*" style="display: none;">
+            </div>
+
+            <!-- Experiment Condition Selector -->
+            <div style="margin-top: 15px; width: 100%; text-align: center;">
+                <label for="experiment-condition"
+                    style="color: white; font-weight: bold; margin-right: 10px;">Experiment Mode:</label>
+                <select id="experiment-condition"
+                    style="padding: 10px; border-radius: 5px; background: #333; color: white; border: 1px solid #555; font-size: 16px;">
+                    <option value="control">1. Control (Static Environment)</option>
+                    <option value="rhythmic" selected>2. Rhythmic (Reactive Lighting)</option>
+                    <option value="semantic">3. Semantic (Lighting + Environment Transitions)</option>
+                </select>
             </div>
 
             <div class="loading" id="loading" style="display: none;">

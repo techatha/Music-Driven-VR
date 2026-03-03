@@ -26,6 +26,9 @@ function injectForestEnvironment(rootElement) {
 
         <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
 
+        <!-- Particles (Leaves) -->
+        <a-entity custom-particles="type: leaves; count: 800; color: #66cc66" position="0 15 0"></a-entity>
+
         <!-- Player Camera -->
         <a-entity camera-controller="target: #boat; offset: 0 1.6 0.5; copyRotationY: true" position="0 1.6 0"
             rotation="0 180 0">
@@ -33,10 +36,9 @@ function injectForestEnvironment(rootElement) {
         </a-entity>
 
         <!-- Lighting -->
-        <a-light type="ambient" color="#222"></a-light>
-        <!-- Moonlight -->
-        <a-light type="directional" position="20 50 -20" color="#aaccff" intensity="0.6"></a-light>
-        <!-- Lantern Warmth -->
+        <a-entity scene-lighting="preset: forest"></a-entity>
+        
+        <!-- Local Lantern Warmth -->
         <a-light type="point" position="0 5 0" color="#ffaa00" intensity="0.5" distance="50"></a-light>
 
         <!-- Floor -->

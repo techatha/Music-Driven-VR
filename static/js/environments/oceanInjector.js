@@ -5,8 +5,8 @@ function injectOceanEnvironment(rootElement) {
         <a-sky material="shader: gradient-shader; topColor: #331133; bottomColor: #ff9900; offset: 400; exponent: 0.6"></a-sky>
         <a-entity star-system="count: 1000; radius: 400; color: #FFF"></a-entity>
 
-        <!-- Manually adding ambient light to ensure models aren't too dark vs the backend -->
-        <a-light type="ambient" color="#222"></a-light>
+        <!-- Lighting (Stable Baseline, Flashing Directors, Player Follower) -->
+        <a-entity scene-lighting="preset: ocean"></a-entity>
 
         <a-circle id="ocean" position="0 -20 0" rotation="-90 0 0" radius="800" color="#469493" material="src: #waterNormal; repeat: 100 100; roughness: 0.1; metalness: 0.5; normalMap: #waterNormal; normalScale: 1 1;"
         animation="property: material.normalTextureOffset; from: 0 0; to: 1 0; loop: true; dur: 100000; easing: linear"
@@ -19,6 +19,9 @@ function injectOceanEnvironment(rootElement) {
         <!-- Floor -->
         <a-plane position="0 -30 0" rotation="-90 0 0" width="1000" height="1000"
             multi-color-floor="preset: none"></a-plane>
+
+        <!-- Particles (Rain) -->
+        <a-entity custom-particles="type: rain; count: 2000; color: #88ccff" position="0 20 0"></a-entity>
 
         <!-- Player Rig -->
         <a-entity id="rig" position="0 1.6 0">
