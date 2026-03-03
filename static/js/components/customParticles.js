@@ -64,10 +64,13 @@ AFRAME.registerComponent('custom-particles', {
         const i3 = i * 3;
         const spread = 20;
 
+        // By centering everything completely around 0,0,0 (X,Y,Z),
+        // when we attach this 0,0,0 origin to the camera later, the particles 
+        // perfectly encompass the user rather than spawning "above" the origin.
         switch (this.data.type) {
             case 'leaves':
                 positions[i3] = (Math.random() - 0.5) * spread;
-                positions[i3 + 1] = Math.random() * 15 + 5;
+                positions[i3 + 1] = (Math.random() - 0.5) * spread; // Centered Y
                 positions[i3 + 2] = (Math.random() - 0.5) * spread;
                 this.velocities[i3] = (Math.random() - 0.5) * 0.3;
                 this.velocities[i3 + 1] = -Math.random() * 0.5 - 0.2;
@@ -75,7 +78,7 @@ AFRAME.registerComponent('custom-particles', {
                 break;
             case 'rain':
                 positions[i3] = (Math.random() - 0.5) * spread;
-                positions[i3 + 1] = Math.random() * 20;
+                positions[i3 + 1] = (Math.random() - 0.5) * spread; // Centered Y
                 positions[i3 + 2] = (Math.random() - 0.5) * spread;
                 this.velocities[i3] = 0;
                 this.velocities[i3 + 1] = -Math.random() * 8 - 4;
@@ -83,7 +86,7 @@ AFRAME.registerComponent('custom-particles', {
                 break;
             case 'stars':
                 positions[i3] = (Math.random() - 0.5) * spread * 1.5;
-                positions[i3 + 1] = Math.random() * 12 + 1;
+                positions[i3 + 1] = (Math.random() - 0.5) * spread * 1.5; // Centered Y
                 positions[i3 + 2] = (Math.random() - 0.5) * spread * 1.5;
                 this.velocities[i3] = (Math.random() - 0.5) * 0.5;
                 this.velocities[i3 + 1] = (Math.random() - 0.5) * 0.5;
@@ -91,7 +94,7 @@ AFRAME.registerComponent('custom-particles', {
                 break;
             case 'sparks':
                 positions[i3] = (Math.random() - 0.5) * 8;
-                positions[i3 + 1] = Math.random() * 3;
+                positions[i3 + 1] = Math.random() * 3; // Sparks mostly go UP from the designated floor placement, so keep this at 0 baseline
                 positions[i3 + 2] = (Math.random() - 0.5) * 8;
                 this.velocities[i3] = (Math.random() - 0.5) * 2;
                 this.velocities[i3 + 1] = Math.random() * 3 + 1;
