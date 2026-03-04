@@ -5,14 +5,26 @@ function injectRoomEnvironment(rootElement) {
         <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#8B4513"
             material="roughness: 0.8"></a-plane>
         <!-- Multi-Color Floor (below room, visible from window) -->
-        <a-plane position="0 -1 0" rotation="-90 0 0" width="5000" height="5000"
+        <a-plane position="0 -10 0" rotation="-90 0 0" width="5000" height="5000"
             multi-color-floor="preset: none"></a-plane>
 
         <!-- Ceiling (Height 12) -->
         <a-plane position="0 12 0" rotation="90 0 0" width="20" height="20" color="#F5F5DC"></a-plane>
 
         <!-- Window View (Outside) -->
-        <a-entity window-view-controller position="0 10 0"></a-entity> <!-- Centered but raised to eye level -->
+        <!-- Decorative Polygon Mountains Outside -->
+        <a-entity position="60 -5 -40">
+            <a-cone position="0 0 -30" radius-bottom="40" radius-top="0" height="50" color="#2c3e50" segments-radial="4" material="flatShading: true; roughness: 1"></a-cone>
+            <a-cone position="10 -5 -15" radius-bottom="30" radius-top="0" height="35" color="#34495e" segments-radial="5" material="flatShading: true; roughness: 1"></a-cone>
+            <a-cone position="-15 -10 -20" radius-bottom="35" radius-top="0" height="40" color="#1a252f" segments-radial="4" material="flatShading: true; roughness: 1"></a-cone>
+            <a-cone position="-5 -2 15" radius-bottom="25" radius-top="0" height="30" color="#3d566e" segments-radial="5" material="flatShading: true; roughness: 1"></a-cone>
+            <a-cone position="20 -10 10" radius-bottom="30" radius-top="0" height="40" color="#2c3e50" segments-radial="4" material="flatShading: true; roughness: 1"></a-cone>
+        </a-entity>
+        
+        <!-- Add weather particles exclusively *outside* the window. 
+             Spread is 150 = radius 75. Window is at X=10.
+             Positioning storm at X=85 ensures particles hit X=10 exactly without entering! -->
+        <a-entity custom-particles="type: rain; count: 20000; color: #88ccff" position="85 20 0"></a-entity>
 
         <!-- Walls (Height 12) -->
         <a-box position="0 6 -10" width="20" height="12" depth="0.1" color="#F5F5DC"></a-box> <!-- Back Wall -->

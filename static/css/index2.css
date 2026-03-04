@@ -96,6 +96,8 @@ h1 {
     max-height: 400px;
     overflow-y: auto;
     line-height: 1.6;
+    color: #ffffff;
+    /* Force the text inside the textarea to be white */
 }
 
 .loading {
