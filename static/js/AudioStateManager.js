@@ -27,9 +27,10 @@ class AudioStateManager {
         if (!this.analysisData.semanticCues || this.analysisData.semanticCues.length === 0) {
             console.log("No semantic cues from backend. Generating fallbacks to test Semantic mode constraints...");
             this.analysisData.semanticCues = [
-                { time: 10, preset: "test_evening_glass" }, // 10 seconds in -> Sky: evening, Floor: glass
-                { time: 25, preset: "test_night_void" },    // 25 seconds in -> Sky: night, Floor: void
-                { time: 40, preset: "test_morning_snow" }   // 40 seconds in -> Sky: morning, Floor: snow
+                { time: 10, preset: "rain_evening" },
+                { time: 25, preset: "stars_night" },
+                { time: 40, preset: "leaves_morning" },
+                { time: 55, preset: "snow_day" }
             ];
         }
 
@@ -105,27 +106,41 @@ class AudioStateManager {
                 const cue = e.detail.cue;
                 console.log("🎵 Semantic Cue Triggered:", cue.preset);
 
-                // Parse the preset exactly like startVR() does
-                const parts = cue.preset.split('_');
-                if (parts.length >= 2) {
-                    const skyTime = parts[1]; // e.g. "evening" or "morning"
+                // Parse the preset string to find micro-environment keywords 
+                // Ex: "rain_night", "leaves_morning", "snow_day", "stars_evening"
+                const lowerPreset = cue.preset.toLowerCase();
 
-                    let floorPreset = null;
-                    if (parts.length >= 3) {
-                        const floorDesc = parts[2]; // e.g. "dark"
-                        if (floorDesc.includes('dark') || floorDesc.includes('void')) floorPreset = 'void';
-                        else if (floorDesc.includes('snow') || floorDesc.includes('white')) floorPreset = 'snow';
-                        else if (floorDesc.includes('glass') || floorDesc.includes('reflective')) floorPreset = 'glass';
-                    }
+                // 1. Control the Particles globally
+                const particleSystems = document.querySelectorAll('[custom-particles]');
+                particleSystems.forEach(ps => {
+                    const currentType = ps.getAttribute('custom-particles').type;
 
-                    if (window.sceneTheme) {
-                        if (floorPreset && floorPreset !== 'null') {
-                            window.sceneTheme.setTheme(skyTime, floorPreset);
-                        } else {
-                            window.sceneTheme.setSky(skyTime);
-                        }
+                    // Don't mess with sparks in the fireplace, they should stay sparks!
+                    if (currentType === 'sparks') return;
+
+                    if (lowerPreset.includes('rain')) {
+                        ps.setAttribute('custom-particles', 'type: rain; count: 25000; color: #88ccff');
+                    } else if (lowerPreset.includes('snow')) {
+                        // We use 'rain' but color it white so it looks like snow falling
+                        ps.setAttribute('custom-particles', 'type: rain; count: 30000; color: #ffffff');
+                    } else if (lowerPreset.includes('leaves')) {
+                        ps.setAttribute('custom-particles', 'type: leaves; count: 12000; color: #66cc66');
+                    } else if (lowerPreset.includes('stars')) {
+                        ps.setAttribute('custom-particles', 'type: stars; count: 20000; color: #ffeb99');
+                    } else if (lowerPreset.includes('none') || lowerPreset.includes('clear')) {
+                        ps.setAttribute('custom-particles', 'type: none');
                     }
-                }
+                });
+
+                // 2. Control the Lanterns globally
+                const lanterns = document.querySelectorAll('[lanterns]');
+                lanterns.forEach(lanternSystem => {
+                    if (lowerPreset.includes('night') || lowerPreset.includes('evening') || lowerPreset.includes('dark')) {
+                        lanternSystem.setAttribute('visible', 'true');
+                    } else if (lowerPreset.includes('morning') || lowerPreset.includes('day') || lowerPreset.includes('bright')) {
+                        lanternSystem.setAttribute('visible', 'false');
+                    }
+                });
             });
             this.listeningForCues = true;
         }

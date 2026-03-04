@@ -62,7 +62,7 @@ AFRAME.registerComponent('custom-particles', {
 
     initParticle: function (positions, i) {
         const i3 = i * 3;
-        const spread = 20;
+        const spread = 150; // Massively increased spread so it covers the whole area
 
         // By centering everything completely around 0,0,0 (X,Y,Z),
         // when we attach this 0,0,0 origin to the camera later, the particles 
@@ -109,7 +109,7 @@ AFRAME.registerComponent('custom-particles', {
 
         const dt = timeDelta / 1000; // A-Frame delta is in ms, convert to seconds
         const pos = this.points.geometry.attributes.position.array;
-        const spread = 20;
+        const spread = 150;
 
         // --- HOOK INTO YOUR MUSIC MANAGER ---
         let energy = 0;
@@ -141,8 +141,8 @@ AFRAME.registerComponent('custom-particles', {
 
             // Respawn logic if they fall out of bounds
             let respawn = false;
-            if (this.data.type === 'rain' && pos[i3 + 1] < 0) respawn = true;
-            if (this.data.type === 'leaves' && pos[i3 + 1] < 0) respawn = true;
+            if (this.data.type === 'rain' && pos[i3 + 1] < -30) respawn = true; // Fall gracefully past floor
+            if (this.data.type === 'leaves' && pos[i3 + 1] < -10) respawn = true;
             if (this.data.type === 'sparks' && (pos[i3 + 1] < 0 || this.lifetimes[i] < 0)) respawn = true;
             if (this.data.type === 'stars' && this.lifetimes[i] < 0) respawn = true;
             if (Math.abs(pos[i3]) > spread || Math.abs(pos[i3 + 2]) > spread) respawn = true;

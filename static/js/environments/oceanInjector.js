@@ -20,12 +20,12 @@ function injectOceanEnvironment(rootElement) {
         <a-plane position="0 -30 0" rotation="-90 0 0" width="1000" height="1000"
             multi-color-floor="preset: none"></a-plane>
 
+        <!-- Particles (Rain) -->
+        <a-entity custom-particles="type: rain; count: 25000; color: #88ccff" position="0 20 0"></a-entity>
+
         <!-- Player Rig -->
         <a-entity id="rig" position="0 1.6 0">
-            <a-entity camera look-controls wasd-controls position="0 0 0">
-                <!-- Particles (Rain) attached to Head -->
-                <a-entity custom-particles="type: rain; count: 2000; color: #88ccff" position="0 0 0"></a-entity>
-            </a-entity>
+            <a-entity camera look-controls wasd-controls position="0 0 0"></a-entity>
         </a-entity>
     `;
 }
