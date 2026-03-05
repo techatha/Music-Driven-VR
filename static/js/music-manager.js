@@ -18,8 +18,8 @@ AFRAME.registerComponent('music-manager', {
 
         // Use the global AudioPlayback controller if it exists in the HTML
         if (window.AudioPlayback) {
-            const title = jsonData?.metadata?.title || jsonData?.title || "Uploaded Track";
-            const artist = jsonData?.metadata?.artist || jsonData?.artist || "Unknown Artist";
+            const title = jsonData?.songInfo?.title || jsonData?.metadata?.title || jsonData?.title || "Uploaded Track";
+            const artist = jsonData?.songInfo?.artist || jsonData?.metadata?.artist || jsonData?.artist || "Unknown Artist";
 
             console.log("▶️ [music-manager] Sending track to AudioPlayback controller:", title);
             window.AudioPlayback.loadTrack(blobUrl, title, artist);

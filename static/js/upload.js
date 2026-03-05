@@ -123,15 +123,15 @@ confirmBtn.addEventListener('click', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lyrics: editedLyrics })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) throw new Error(data.error);
-        pollJobStatus(currentJobId); // Resume polling for Phase 2!
-    })
-    .catch(err => {
-        loading.style.display = 'none';
-        showError("Failed to start analysis: " + err.message);
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) throw new Error(data.error);
+            pollJobStatus(currentJobId); // Resume polling for Phase 2!
+        })
+        .catch(err => {
+            loading.style.display = 'none';
+            showError("Failed to start analysis: " + err.message);
+        });
 });
 
 function fetchFinalResult(jobId) {
@@ -146,9 +146,13 @@ function fetchFinalResult(jobId) {
 
             // At this point, the data is completely ready!
             // You can trigger the transition to your A-Frame scene here.
-            alert("Analysis Complete! Check the console for the final JSON payload.");
+            loadingText.textContent = "Done! Starting VR experience...";
             appState.setAnalysisData(data);
-            appState.startVR();
+
+            // Wait 2 seconds so the user can see the "Done" message before hiding UI
+            setTimeout(() => {
+                appState.startVR();
+            }, 2000);
 
         })
         .catch(err => {
