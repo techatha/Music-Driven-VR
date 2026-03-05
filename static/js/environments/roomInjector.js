@@ -24,7 +24,7 @@ function injectRoomEnvironment(rootElement) {
         <!-- Add weather particles exclusively *outside* the window. 
              Spread is 150 = radius 75. Window is at X=10.
              Positioning storm at X=85 ensures particles hit X=10 exactly without entering! -->
-        <a-entity custom-particles="type: rain; count: 20000; color: #88ccff" position="85 20 0"></a-entity>
+        <a-entity custom-particles="type: none; count: 20000; color: #88ccff" position="85 20 0"></a-entity>
 
         <!-- Walls (Height 12) -->
         <a-box position="0 6 -10" width="20" height="12" depth="0.1" color="#F5F5DC"></a-box> <!-- Back Wall -->

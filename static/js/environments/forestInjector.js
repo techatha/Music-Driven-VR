@@ -27,7 +27,7 @@ function injectForestEnvironment(rootElement) {
         <a-entity lanterns="count: 100; range: 200; speed: 0.8; color: #ffaa00"></a-entity>
 
         <!-- Particles (Leaves) -->
-        <a-entity custom-particles="type: leaves; count: 12000; color: #66cc66" position="0 15 0"></a-entity>
+        <a-entity custom-particles="type: none; count: 12000; color: #66cc66" position="0 15 0"></a-entity>
 
         <!-- Player Camera -->
         <a-entity camera-controller="target: #boat; offset: 0 1.6 0.5; copyRotationY: true" position="0 1.6 0"

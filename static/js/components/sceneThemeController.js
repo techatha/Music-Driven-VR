@@ -15,7 +15,11 @@
  */
 class SceneThemeController {
     constructor() {
-        // No caching — elements change when environments are swapped
+        // Cache the currently applied themes
+        this.currentSky = null;
+        this.currentFloor = null;
+        this.currentCustomColor = null;
+        this.currentParticlePreset = null;
     }
 
     _findElements() {
@@ -45,6 +49,7 @@ class SceneThemeController {
      * @param {'day'|'evening'|'night'|'morning'} time
      */
     setSky(time) {
+        this.currentSky = time; // Save state
         const { skyEl } = this._findElements();
         if (!skyEl) { console.warn('SceneThemeController: sky-controller not found'); return; }
 
@@ -72,6 +77,9 @@ class SceneThemeController {
      * @param {string} [customColor] - Hex color (only for 'custom')
      */
     setFloor(preset, customColor) {
+        this.currentFloor = preset; // Save state
+        if (preset === 'custom') this.currentCustomColor = customColor;
+
         const { floorEl } = this._findElements();
         if (!floorEl) { console.warn('SceneThemeController: multi-color-floor not found'); return; }
 
@@ -93,6 +101,60 @@ class SceneThemeController {
                 console.warn(`SceneThemeController: Unknown floor preset "${preset}". Use: snow, glass, void, custom`);
             }
         }
+    }
+
+    // ─── Particles & Lanterns ───────────────────────────
+
+    /**
+     * Set the global particle and lantern state (driven by semantic cues)
+     * @param {'Tension'|'Melancholy'|'Serenity'|'Euphoria'|'none'|'clear'} preset 
+     */
+    setParticles(preset) {
+        this.currentParticlePreset = preset; // Save state
+
+        // 1. Control the Particles globally
+        const particleSystems = document.querySelectorAll('[custom-particles]');
+        particleSystems.forEach(ps => {
+            const currentType = ps.getAttribute('custom-particles').type;
+
+            // Don't mess with sparks in the fireplace, they should stay sparks!
+            if (currentType === 'sparks') return;
+
+            if (preset === 'Tension') {
+                ps.setAttribute('custom-particles', 'type: rain; count: 25000; color: #88ccff');
+            } else if (preset === 'Melancholy') {
+                // We use 'rain' but color it white so it looks like snow falling
+                ps.setAttribute('custom-particles', 'type: rain; count: 30000; color: #ffffff');
+            } else if (preset === 'Serenity') {
+                ps.setAttribute('custom-particles', 'type: leaves; count: 12000; color: #66cc66');
+            } else if (preset === 'Euphoria') {
+                ps.setAttribute('custom-particles', 'type: stars; count: 20000; color: #ffeb99');
+            } else if (preset === 'none' || preset === 'clear') {
+                ps.setAttribute('custom-particles', 'type: none');
+            }
+        });
+
+        // 2. Control the Lanterns globally
+        const lanterns = document.querySelectorAll('[lanterns]');
+        lanterns.forEach(lanternSystem => {
+            if (preset === 'Tension' || preset === 'Melancholy') {
+                lanternSystem.setAttribute('visible', 'true');
+            } else if (preset === 'Euphoria' || preset === 'Serenity') {
+                lanternSystem.setAttribute('visible', 'false');
+            }
+        });
+
+        console.log(`SceneTheme: Particles & Lanterns → ${preset}`);
+    }
+
+    /**
+     * Reapply the highest-priority saved theme to the current DOM elements
+     * (Useful after swapping environments)
+     */
+    reapplyTheme() {
+        if (this.currentSky) this.setSky(this.currentSky);
+        if (this.currentFloor) this.setFloor(this.currentFloor, this.currentCustomColor);
+        if (this.currentParticlePreset) this.setParticles(this.currentParticlePreset);
     }
 }
 

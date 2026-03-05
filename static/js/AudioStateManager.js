@@ -107,38 +107,9 @@ class AudioStateManager {
                 console.log("🎵 Semantic Cue Triggered:", cue.preset);
 
                 const preset = cue.preset;
-
-                // 1. Control the Particles globally
-                const particleSystems = document.querySelectorAll('[custom-particles]');
-                particleSystems.forEach(ps => {
-                    const currentType = ps.getAttribute('custom-particles').type;
-
-                    // Don't mess with sparks in the fireplace, they should stay sparks!
-                    if (currentType === 'sparks') return;
-
-                    if (preset === 'Tension') {
-                        ps.setAttribute('custom-particles', 'type: rain; count: 25000; color: #88ccff');
-                    } else if (preset === 'Melancholy') {
-                        // We use 'rain' but color it white so it looks like snow falling
-                        ps.setAttribute('custom-particles', 'type: rain; count: 30000; color: #ffffff');
-                    } else if (preset === 'Serenity') {
-                        ps.setAttribute('custom-particles', 'type: leaves; count: 12000; color: #66cc66');
-                    } else if (preset === 'Euphoria') {
-                        ps.setAttribute('custom-particles', 'type: stars; count: 20000; color: #ffeb99');
-                    } else if (preset === 'none' || preset === 'clear') {
-                        ps.setAttribute('custom-particles', 'type: none');
-                    }
-                });
-
-                // 2. Control the Lanterns globally
-                const lanterns = document.querySelectorAll('[lanterns]');
-                lanterns.forEach(lanternSystem => {
-                    if (preset === 'Tension' || preset === 'Melancholy') {
-                        lanternSystem.setAttribute('visible', 'true');
-                    } else if (preset === 'Euphoria' || preset === 'Serenity') {
-                        lanternSystem.setAttribute('visible', 'false');
-                    }
-                });
+                if (window.sceneTheme) {
+                    window.sceneTheme.setParticles(preset);
+                }
             });
             this.listeningForCues = true;
         }

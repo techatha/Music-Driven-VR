@@ -21,7 +21,7 @@ function injectOceanEnvironment(rootElement) {
             multi-color-floor="preset: none"></a-plane>
 
         <!-- Particles (Rain) -->
-        <a-entity custom-particles="type: rain; count: 25000; color: #88ccff" position="0 20 0"></a-entity>
+        <a-entity custom-particles="type: none; count: 25000; color: #88ccff" position="0 20 0"></a-entity>
 
         <!-- Player Rig -->
         <a-entity id="rig" position="0 1.6 0">

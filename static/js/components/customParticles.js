@@ -105,7 +105,23 @@ AFRAME.registerComponent('custom-particles', {
     },
 
     tick: function (time, timeDelta) {
-        if (this.data.type === 'none' || !this.points.visible) return;
+        if (this.data.type === 'none') {
+            if (this.points.visible) this.points.visible = false;
+            return;
+        }
+
+        // --- HOOK INTO AUDIO PLAYBACK STATE ---
+        // Hide particles if music is paused
+        if (window.AudioPlayback && window.AudioPlayback.audioElement) {
+            if (!window.AudioPlayback.isPlaying && !window.AudioPlayback.audioElement.ended) {
+                if (this.points.visible) this.points.visible = false;
+                return;
+            } else {
+                if (!this.points.visible) this.points.visible = true;
+            }
+        } else if (!this.points.visible) {
+            return;
+        }
 
         const dt = timeDelta / 1000; // A-Frame delta is in ms, convert to seconds
         const pos = this.points.geometry.attributes.position.array;

@@ -36,6 +36,14 @@ class EnvironmentInjector {
             if (typeof injectRoomEnvironment === 'function') injectRoomEnvironment(this.rootElement);
             else console.error("injectRoomEnvironment not found");
         }
+
+        // --- NEW: Reapply the active Sky & Floor theme after the new environment DOM loads ---
+        setTimeout(() => {
+            if (window.sceneTheme) {
+                console.log("EnvironmentInjector: Reapplying saved Sky and Floor themes...");
+                window.sceneTheme.reapplyTheme();
+            }
+        }, 200); // 200ms gives A-Frame time to parse the newly injected HTML and attach components
     }
 }
 
