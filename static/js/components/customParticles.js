@@ -134,9 +134,17 @@ AFRAME.registerComponent('custom-particles', {
 
             // Beat response (Explode outward!)
             if (isBeat && this.data.type !== 'rain') {
-                this.velocities[i3] += (Math.random() - 0.5) * energy * 2;
-                this.velocities[i3 + 1] += Math.random() * energy * 1.5;
-                this.velocities[i3 + 2] += (Math.random() - 0.5) * energy * 2;
+                if (this.data.type === 'sparks') {
+                    // Massive explosion for sparks so it's incredibly obvious
+                    this.velocities[i3] += (Math.random() - 0.5) * energy * 15;
+                    this.velocities[i3 + 1] += Math.random() * energy * 15; // Shoots straight up out of the fire!
+                    this.velocities[i3 + 2] += (Math.random() - 0.5) * energy * 15;
+                } else {
+                    // Normal subtle explosion for leaves/stars
+                    this.velocities[i3] += (Math.random() - 0.5) * energy * 2;
+                    this.velocities[i3 + 1] += Math.random() * energy * 1.5;
+                    this.velocities[i3 + 2] += (Math.random() - 0.5) * energy * 2;
+                }
             }
 
             // Respawn logic if they fall out of bounds

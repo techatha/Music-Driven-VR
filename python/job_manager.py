@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from python.lyric_finding_service import find_song_info
 from python.nlp_lyric_analyzer import nlp_find_main_preset
 from python.rhythm_analyzer import analyze_rhythm
+from python.semantic_cue_generator import generate_dynamic_cues
 
 # State: queued_lyrics => running_lyrics => awaiting_user_confirmation => running_analysis => done
 executor = ThreadPoolExecutor(max_workers=4)
@@ -67,6 +68,9 @@ def analysis_job(job_id, confirmed_lyrics):
             # This extracts the beats, onsets, and 30fps energy curves
             rhythm_data = analyze_rhythm(temp_path)
 
+            # Generate dynamic cues from rhythm data
+            semantic_cues = generate_dynamic_cues(rhythm_data)
+
             # 4. Compile the final massive VR payload!
             result = {
                 "songInfo": song_info,
@@ -83,7 +87,7 @@ def analysis_job(job_id, confirmed_lyrics):
 
                 # Placeholders for future lyric timing logic
                 "lyricSegments": [],
-                "semanticCues": [],
+                "semanticCues": semantic_cues,
             }
 
             jobs[job_id]['result'] = result

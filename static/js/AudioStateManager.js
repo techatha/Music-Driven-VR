@@ -27,10 +27,10 @@ class AudioStateManager {
         if (!this.analysisData.semanticCues || this.analysisData.semanticCues.length === 0) {
             console.log("No semantic cues from backend. Generating fallbacks to test Semantic mode constraints...");
             this.analysisData.semanticCues = [
-                { time: 10, preset: "rain_evening" },
-                { time: 25, preset: "stars_night" },
-                { time: 40, preset: "leaves_morning" },
-                { time: 55, preset: "snow_day" }
+                { time: 10, preset: "Tension" },
+                { time: 25, preset: "Euphoria" },
+                { time: 40, preset: "Serenity" },
+                { time: 55, preset: "Melancholy" }
             ];
         }
 
@@ -106,9 +106,7 @@ class AudioStateManager {
                 const cue = e.detail.cue;
                 console.log("🎵 Semantic Cue Triggered:", cue.preset);
 
-                // Parse the preset string to find micro-environment keywords 
-                // Ex: "rain_night", "leaves_morning", "snow_day", "stars_evening"
-                const lowerPreset = cue.preset.toLowerCase();
+                const preset = cue.preset;
 
                 // 1. Control the Particles globally
                 const particleSystems = document.querySelectorAll('[custom-particles]');
@@ -118,16 +116,16 @@ class AudioStateManager {
                     // Don't mess with sparks in the fireplace, they should stay sparks!
                     if (currentType === 'sparks') return;
 
-                    if (lowerPreset.includes('rain')) {
+                    if (preset === 'Tension') {
                         ps.setAttribute('custom-particles', 'type: rain; count: 25000; color: #88ccff');
-                    } else if (lowerPreset.includes('snow')) {
+                    } else if (preset === 'Melancholy') {
                         // We use 'rain' but color it white so it looks like snow falling
                         ps.setAttribute('custom-particles', 'type: rain; count: 30000; color: #ffffff');
-                    } else if (lowerPreset.includes('leaves')) {
+                    } else if (preset === 'Serenity') {
                         ps.setAttribute('custom-particles', 'type: leaves; count: 12000; color: #66cc66');
-                    } else if (lowerPreset.includes('stars')) {
+                    } else if (preset === 'Euphoria') {
                         ps.setAttribute('custom-particles', 'type: stars; count: 20000; color: #ffeb99');
-                    } else if (lowerPreset.includes('none') || lowerPreset.includes('clear')) {
+                    } else if (preset === 'none' || preset === 'clear') {
                         ps.setAttribute('custom-particles', 'type: none');
                     }
                 });
@@ -135,9 +133,9 @@ class AudioStateManager {
                 // 2. Control the Lanterns globally
                 const lanterns = document.querySelectorAll('[lanterns]');
                 lanterns.forEach(lanternSystem => {
-                    if (lowerPreset.includes('night') || lowerPreset.includes('evening') || lowerPreset.includes('dark')) {
+                    if (preset === 'Tension' || preset === 'Melancholy') {
                         lanternSystem.setAttribute('visible', 'true');
-                    } else if (lowerPreset.includes('morning') || lowerPreset.includes('day') || lowerPreset.includes('bright')) {
+                    } else if (preset === 'Euphoria' || preset === 'Serenity') {
                         lanternSystem.setAttribute('visible', 'false');
                     }
                 });

@@ -13,7 +13,7 @@ function injectRoomEnvironment(rootElement) {
 
         <!-- Window View (Outside) -->
         <!-- Decorative Polygon Mountains Outside -->
-        <a-entity position="60 -5 -40">
+        <a-entity position="60 10 -40">
             <a-cone position="0 0 -30" radius-bottom="40" radius-top="0" height="50" color="#2c3e50" segments-radial="4" material="flatShading: true; roughness: 1"></a-cone>
             <a-cone position="10 -5 -15" radius-bottom="30" radius-top="0" height="35" color="#34495e" segments-radial="5" material="flatShading: true; roughness: 1"></a-cone>
             <a-cone position="-15 -10 -20" radius-bottom="35" radius-top="0" height="40" color="#1a252f" segments-radial="4" material="flatShading: true; roughness: 1"></a-cone>
