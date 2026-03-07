@@ -47,44 +47,45 @@ function injectForestEnvironment(rootElement) {
     `;
 
     // Execute scripts that were inside the HTML
-    setTimeout(() => {
-        const forest = document.querySelector('[forest-generator]');
-        const moon = document.querySelector('#moon');
-        const lanterns = document.querySelector('[lanterns]');
-        const water = document.querySelector('[water-helper]');
+    // setTimeout(() => {
+    //     const forest = document.querySelector('[forest-generator]');
+    //     const moon = document.querySelector('#moon');
+    //     const lanterns = document.querySelector('[lanterns]');
+    //     const water = document.querySelector('[water-helper]');
 
-        // Trigger Moon Growth
-        setTimeout(() => {
-            if (moon) moon.emit('start-growth');
-        }, 1000);
+    //     // Trigger Moon Growth
+    //     setTimeout(() => {
+    //         if (moon) moon.emit('start-growth');
+    //     }, 1000);
 
-        // Trigger Forest Growth
-        setTimeout(() => {
-            if (forest) forest.emit('start-growth');
-        }, 500);
+    //     // Trigger Forest Growth
+    //     setTimeout(() => {
+    //         if (forest) forest.emit('start-growth');
+    //     }, 500);
 
-        setTimeout(() => {
-            console.log("Starting Lanterns and Water Rise...");
-            if (lanterns) lanterns.emit('start-lanterns'); // Activate lantern logic
-            if (water) water.emit('start-fill');           // Rise up
-        }, 10000);
+    //     setTimeout(() => {
+    //         console.log("Starting Lanterns and Water Rise...");
+    //         if (lanterns) lanterns.emit('start-lanterns'); // Activate lantern logic
+    //         if (water) water.emit('start-fill');           // Rise up
+    //     }, 10000);
 
-        setTimeout(() => {
-            console.log("Returning Water (Drain)...");
-            if (water) water.emit('start-drain');          // Drain down
-        }, 20000); // 10s after rising (total 20s)
+    //     setTimeout(() => {
+    //         console.log("Returning Water (Drain)...");
+    //         if (water) water.emit('start-drain');          // Drain down
+    //     }, 20000); // 10s after rising (total 20s)
 
-        // Sky Controller UI Logic
-        const skyCtrl = document.querySelector('[sky-controller]');
-        if (skyCtrl) {
-            console.log("Emitting set-morning...");
-            skyCtrl.emit('set-morning');
-        }
+    //     // Sky Controller UI Logic
+    //     const skyCtrl = document.querySelector('[sky-controller]');
+    //     if (skyCtrl) {
+    //         console.log("Emitting set-morning...");
+    //         skyCtrl.emit('set-morning');
+    //     }
 
-        const floorCtrl = document.querySelector('[multi-color-floor]');
-        if (floorCtrl) {
-            console.log("Emitting set-floor-snow...");
-            floorCtrl.emit('set-floor-snow');
-        }
-    }, 100); // Slight delay to ensure elements are in the DOM
+    //     const floorCtrl = document.querySelector('[multi-color-floor]');
+    //     if (floorCtrl) {
+    //         console.log("Emitting set-floor-snow...");
+    //         floorCtrl.emit('set-floor-snow');
+    //     }
+    // }, 100); 
+    // Slight delay to ensure elements are in the DOM
 }
