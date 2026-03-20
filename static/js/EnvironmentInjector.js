@@ -20,20 +20,20 @@ class EnvironmentInjector {
         // Extract base preset if needed (handling something like room_evening_dark)
         let basePreset = presetString.toLowerCase();
         if (basePreset.includes('urban')) {
-            if (typeof injectUrbanEnvironment === 'function') injectUrbanEnvironment(this.rootElement);
+            if (typeof injectUrbanEnvironment === 'function') injectUrbanEnvironment(this.rootElement, presetString);
             else console.error("injectUrbanEnvironment not found");
         } else if (basePreset.includes('ocean')) {
-            if (typeof injectOceanEnvironment === 'function') injectOceanEnvironment(this.rootElement);
+            if (typeof injectOceanEnvironment === 'function') injectOceanEnvironment(this.rootElement, presetString);
             else console.error("injectOceanEnvironment not found");
         } else if (basePreset.includes('forest') || basePreset.includes('sky')) {
-            if (typeof injectForestEnvironment === 'function') injectForestEnvironment(this.rootElement);
+            if (typeof injectForestEnvironment === 'function') injectForestEnvironment(this.rootElement, presetString);
             else console.error("injectForestEnvironment not found");
         } else if (basePreset.includes('room')) {
-            if (typeof injectRoomEnvironment === 'function') injectRoomEnvironment(this.rootElement);
+            if (typeof injectRoomEnvironment === 'function') injectRoomEnvironment(this.rootElement, presetString);
             else console.error("injectRoomEnvironment not found");
         } else {
             console.warn(`Unknown preset: ${presetString}, defaulting to room.`);
-            if (typeof injectRoomEnvironment === 'function') injectRoomEnvironment(this.rootElement);
+            if (typeof injectRoomEnvironment === 'function') injectRoomEnvironment(this.rootElement, presetString);
             else console.error("injectRoomEnvironment not found");
         }
 

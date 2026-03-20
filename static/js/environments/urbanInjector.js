@@ -2,6 +2,9 @@ function injectUrbanEnvironment(rootElement) {
     rootElement.innerHTML = `
         <!-- Lighting -->
         <a-entity scene-lighting="preset: urban"></a-entity>
+        
+        <!-- Floor Illumination (Near spawn point 0, 1.6, 30) -->
+        <a-light type="point" position="0 2.5 30" color="#ffffff" intensity="0.4" distance="30"></a-light>
 
         <!-- Sky -->
         <a-entity sky-controller="type: gradient; startTime: night"></a-entity>

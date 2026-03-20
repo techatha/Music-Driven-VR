@@ -3,13 +3,13 @@ function injectRoomEnvironment(rootElement) {
         <!-- Basic Room Structure -->
         <!-- Floor (Wooden) -->
         <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#8B4513"
-            material="roughness: 0.8"></a-plane>
+            material="roughness: 0.9; metalness: 0.0" shadow="receive: true; cast: false"></a-plane>
         <!-- Multi-Color Floor (below room, visible from window) -->
         <a-plane position="0 -10 0" rotation="-90 0 0" width="5000" height="5000"
             multi-color-floor="preset: none"></a-plane>
 
         <!-- Ceiling (Height 12) -->
-        <a-plane position="0 12 0" rotation="90 0 0" width="20" height="20" color="#F5F5DC"></a-plane>
+        <a-plane position="0 12 0" rotation="90 0 0" width="20" height="20" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-plane>
 
         <!-- Window View (Outside) -->
         <!-- Decorative Polygon Mountains Outside -->
@@ -27,21 +27,21 @@ function injectRoomEnvironment(rootElement) {
         <a-entity custom-particles="type: none; count: 20000; color: #88ccff" position="85 20 0"></a-entity>
 
         <!-- Walls (Height 12) -->
-        <a-box position="0 6 -10" width="20" height="12" depth="0.1" color="#F5F5DC"></a-box> <!-- Back Wall -->
+        <a-box position="0 6 -10" width="20" height="12" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box> <!-- Back Wall -->
 
         <!-- Left Wall (Segmented for Door) -->
-        <a-box position="-10 9.5 0" rotation="0 90 0" width="20" height="5" depth="0.1" color="#F5F5DC"></a-box>
-        <a-box position="-10 3.5 -5.75" rotation="0 90 0" width="8.5" height="7" depth="0.1" color="#F5F5DC"></a-box>
-        <a-box position="-10 3.5 5.75" rotation="0 90 0" width="8.5" height="7" depth="0.1" color="#F5F5DC"></a-box>
-        <a-box position="-10 6.5 0" rotation="0 90 0" width="3" height="1.1" depth="0.1" color="#F5F5DC"></a-box>
+        <a-box position="-10 9.5 0" rotation="0 90 0" width="20" height="5" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box>
+        <a-box position="-10 3.5 -5.75" rotation="0 90 0" width="8.5" height="7" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box>
+        <a-box position="-10 3.5 5.75" rotation="0 90 0" width="8.5" height="7" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box>
+        <a-box position="-10 6.5 0" rotation="0 90 0" width="3" height="1.1" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box>
 
         <!-- Right Wall (Segmented for Window) -->
-        <a-box position="10 9.5 0" rotation="0 90 0" width="20" height="5" depth="0.1" color="#F5F5DC"></a-box>
-        <a-box position="10 1.5 0" rotation="0 90 0" width="20" height="3" depth="0.1" color="#F5F5DC"></a-box>
-        <a-box position="10 5 -6.25" rotation="0 90 0" width="7.5" height="4" depth="0.1" color="#F5F5DC"></a-box>
-        <a-box position="10 5 6.25" rotation="0 90 0" width="7.5" height="4" depth="0.1" color="#F5F5DC"></a-box>
+        <a-box position="10 9.5 0" rotation="0 90 0" width="20" height="5" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box>
+        <a-box position="10 1.5 0" rotation="0 90 0" width="20" height="3" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box>
+        <a-box position="10 5 -6.25" rotation="0 90 0" width="7.5" height="4" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box>
+        <a-box position="10 5 6.25" rotation="0 90 0" width="7.5" height="4" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box>
 
-        <a-box position="0 6 10" width="20" height="12" depth="0.1" color="#F5F5DC"></a-box> <!-- Front Wall -->
+        <a-box position="0 6 10" width="20" height="12" depth="0.1" color="#F5F5DC" material="roughness: 1.0; metalness: 0.0" shadow="cast: true; receive: true"></a-box> <!-- Front Wall -->
 
         <!-- Sky (via sky-controller) -->
         <a-entity sky-controller="type: gradient; startTime: night"></a-entity>
@@ -67,6 +67,11 @@ function injectRoomEnvironment(rootElement) {
             <!-- Dedicated Light for Bookshelf -->
             <a-light type="point" position="0 2 1" color="#FFD700" intensity="1.5" distance="5" decay="2"></a-light>
         </a-entity>
+
+        <!-- Default fallback light if scene-lighting struggles -->
+        <a-light type="ambient" color="#222"></a-light>
+        <a-light type="point" position="0 5 0" intensity="0.5" distance="20"></a-light>
+        <a-light type="point" position="0 2 0" color="#ffffff" intensity="0.4" distance="20"></a-light>
 
         <!-- Floor Lamp (New Model, Scaled Up) -->
         <a-entity position="-3.5 5 -3.5">

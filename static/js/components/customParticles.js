@@ -93,12 +93,18 @@ AFRAME.registerComponent('custom-particles', {
                 this.velocities[i3 + 2] = (Math.random() - 0.5) * 0.5;
                 break;
             case 'sparks':
-                positions[i3] = (Math.random() - 0.5) * 8;
-                positions[i3 + 1] = Math.random() * 3; // Sparks mostly go UP from the designated floor placement, so keep this at 0 baseline
-                positions[i3 + 2] = (Math.random() - 0.5) * 8;
-                this.velocities[i3] = (Math.random() - 0.5) * 2;
-                this.velocities[i3 + 1] = Math.random() * 3 + 1;
-                this.velocities[i3 + 2] = (Math.random() - 0.5) * 2;
+                const isGlobal = this.data.count > 1000;
+                const sparkSpread = isGlobal ? spread : 8;
+                positions[i3] = (Math.random() - 0.5) * sparkSpread;
+                if (isGlobal) {
+                    positions[i3 + 1] = (Math.random() - 0.5) * sparkSpread; // Full surround like leaves
+                } else {
+                    positions[i3 + 1] = Math.random() * 3; // Sparks mostly go UP from baseline
+                }
+                positions[i3 + 2] = (Math.random() - 0.5) * sparkSpread;
+                this.velocities[i3] = (Math.random() - 0.5) * (isGlobal ? 6 : 2);
+                this.velocities[i3 + 1] = Math.random() * (isGlobal ? 6 : 3) + 1;
+                this.velocities[i3 + 2] = (Math.random() - 0.5) * (isGlobal ? 6 : 2);
                 break;
         }
         this.lifetimes[i] = Math.random();
@@ -165,9 +171,13 @@ AFRAME.registerComponent('custom-particles', {
 
             // Respawn logic if they fall out of bounds
             let respawn = false;
+            const isGlobal = this.data.count > 1000;
             if (this.data.type === 'rain' && pos[i3 + 1] < -30) respawn = true; // Fall gracefully past floor
             if (this.data.type === 'leaves' && pos[i3 + 1] < -10) respawn = true;
-            if (this.data.type === 'sparks' && (pos[i3 + 1] < 0 || this.lifetimes[i] < 0)) respawn = true;
+            if (this.data.type === 'sparks') {
+                if (isGlobal && (pos[i3 + 1] < -50 || this.lifetimes[i] < 0)) respawn = true;
+                if (!isGlobal && (pos[i3 + 1] < 0 || this.lifetimes[i] < 0)) respawn = true;
+            }
             if (this.data.type === 'stars' && this.lifetimes[i] < 0) respawn = true;
             if (Math.abs(pos[i3]) > spread || Math.abs(pos[i3 + 2]) > spread) respawn = true;
 

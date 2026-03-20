@@ -1,5 +1,6 @@
 import os
 import uuid
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from python.lyric_finding_service import find_song_info
 from python.nlp_lyric_analyzer import nlp_find_main_preset

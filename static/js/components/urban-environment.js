@@ -15,6 +15,7 @@ AFRAME.registerComponent('urban-road', {
         road.setAttribute('width', '8');
         road.setAttribute('height', '100');
         road.setAttribute('color', '#222');
+        road.setAttribute('material', 'roughness: 1.0; metalness: 0.0');
         this.container.appendChild(road);
 
         // 2. Road Markings (Center Line)

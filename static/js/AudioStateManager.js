@@ -54,19 +54,24 @@ class AudioStateManager {
 
             // Map the semantic description from the backend to the exact A-Frame component names
             let floorPreset = null;
+            let customColor = null;
             if (parts.length >= 3) {
                 const floorDesc = parts[2]; // e.g. "dark"
                 if (floorDesc.includes('dark')) floorPreset = 'void';
                 else if (floorDesc.includes('snow') || floorDesc.includes('white')) floorPreset = 'snow';
                 else if (floorDesc.includes('glass') || floorDesc.includes('reflective')) floorPreset = 'glass';
+                else if (floorDesc.includes('grass') || floorDesc.includes('green')) {
+                    floorPreset = 'custom';
+                    customColor = '#1d3e1a'; // Dark green for grass
+                }
             }
 
             // Allow time for A-Frame components to mount before emitting the theme events
             setTimeout(() => {
-                console.log("🚀 [AudioStateManager] Setting theme:", skyTime, floorPreset);
+                console.log("🚀 [AudioStateManager] Setting theme:", skyTime, floorPreset, customColor);
                 if (window.sceneTheme) {
                     if (floorPreset && floorPreset !== 'null') {
-                        window.sceneTheme.setTheme(skyTime, floorPreset);
+                        window.sceneTheme.setTheme(skyTime, floorPreset, customColor);
                     } else {
                         window.sceneTheme.setSky(skyTime);
                         console.log("🚀 [AudioStateManager] Setting sky theme:", skyTime);

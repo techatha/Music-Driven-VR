@@ -27,7 +27,7 @@ AFRAME.registerComponent('sky-controller', {
         const envData = {
             preset: this.data.preset,
             skyType: this.data.skyType,
-            lighting: this.data.lighting,
+            lighting: 'none', // Disable built-in aframe-environment lighting
             ground: this.data.ground,
 
             // Customized for Sunset (Hardcoded for now as per original component)
@@ -119,7 +119,7 @@ AFRAME.registerComponent('sky-controller', {
             this._proceduralEl.setAttribute('environment', {
                 preset: 'arches',
                 skyType: 'atmosphere',
-                lighting: 'distant',
+                lighting: 'none', // Disable built-in aframe-environment lighting
                 ground: 'none',
                 horizonColor: '#ff9900',
                 skyColor: '#331133',

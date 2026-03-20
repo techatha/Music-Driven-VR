@@ -7,6 +7,9 @@ function injectOceanEnvironment(rootElement) {
 
         <!-- Lighting (Stable Baseline, Flashing Directors, Player Follower) -->
         <a-entity scene-lighting="preset: ocean"></a-entity>
+        
+        <!-- Floor Illumination -->
+        <a-light type="point" position="0 2 0" color="#ffffff" intensity="0.4" distance="30"></a-light>
 
         <a-circle id="ocean" position="0 -20 0" rotation="-90 0 0" radius="800" color="#469493" material="src: #waterNormal; repeat: 100 100; roughness: 0.1; metalness: 0.5; normalMap: #waterNormal; normalScale: 1 1;"
         animation="property: material.normalTextureOffset; from: 0 0; to: 1 0; loop: true; dur: 100000; easing: linear"

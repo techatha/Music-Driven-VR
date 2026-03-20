@@ -34,11 +34,15 @@ AFRAME.registerComponent('scene-lighting', {
         ambient.setAttribute('intensity', '0.4');
         this.el.appendChild(ambient);
 
-        // 2. Primary Directional Light (flashes to beats)
+        // 2. Primary Directional Light (flashes to beats & casts shadow)
         const dir1 = document.createElement('a-light');
         dir1.setAttribute('type', 'directional');
         dir1.setAttribute('color', p.dir1);
-        dir1.setAttribute('position', '1 3 2');
+        dir1.setAttribute('position', '5 10 5'); // Moved slightly higher and angled to cast shadows effectively
+        dir1.setAttribute('castShadow', 'true');
+        // Ensure the shadow map is large enough to cover the whole room area cleanly
+        dir1.setAttribute('light', 'castShadow: true; shadowMapHeight: 2048; shadowMapWidth: 2048; shadowCameraLeft: -20; shadowCameraRight: 20; shadowCameraBottom: -20; shadowCameraTop: 20;');
+
         // Notice min: 0.1 so it drops low between beats, and max: 1.5 for a bright flash
         dir1.setAttribute('music-reactor', 'property: light.intensity; min: 0.1; max: 1.5; reactive: beat; decay: 0.85');
         this.el.appendChild(dir1);

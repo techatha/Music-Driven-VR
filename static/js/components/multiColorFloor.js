@@ -62,7 +62,8 @@ AFRAME.registerComponent('multi-color-floor', {
             color: color,
             opacity: 1.0,
             transparent: false, // Default to opaque for custom
-            roughness: 1.0,    // High roughness = less reflection
+            roughness: 1.0,     // Perfectly rough (no gloss)
+            metalness: 0.0,     // No metallic reflection
             side: 'double'
         });
     }

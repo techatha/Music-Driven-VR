@@ -32,16 +32,28 @@ AFRAME.registerComponent('model-opacity', {
                     node.material.map.flipY = false;
                 }
 
-                // Ensure it glows (Moon should be bright!)
-                // FIX: Use the texture itself as the emissive map so craters stay dark!
+                // Store original emissive for reverting
+                if (!node.userData.originalEmissive) {
+                    node.userData.originalEmissive = node.material.emissive.clone();
+                }
+
+                // Ensure it glows
                 if (node.material.map) {
                     node.material.emissiveMap = node.material.map;
-                    node.material.emissive.setHex(0xffffff); // White tint for the map
-                    node.material.emissiveIntensity = 1.0;   // Adjust brightness here
+                    node.material.emissive.setHex(0xffffff);
+                    node.material.emissiveIntensity = 1.0;
                 } else if (node.material.emissive) {
-                    // Fallback if no texture
                     node.material.emissive.setHex(0xaaaaaa);
                     node.material.emissiveIntensity = 0.5;
+                }
+
+                // If currently marked as sun, override immediately
+                if (data === 9.99) { // Using 9.99 as a magic number to flag Sun mode dynamically from moon-controller
+                    node.material.emissive.setHex(0xffea00); // Bright Yellow
+                    node.material.emissiveIntensity = 2.0;
+                    node.material.opacity = 1.0;
+                    node.material.transparent = false;
+                    node.material.map = null; // Remove craters
                 }
 
                 node.material.needsUpdate = true;
@@ -70,7 +82,7 @@ AFRAME.registerComponent('moon-controller', {
 
         // Listen for start-shrink -> Fade Out
         this.el.addEventListener('start-shrink', () => {
-            this.el.removeAttribute('animation__fadein'); // Stop fadein if running
+            this.el.removeAttribute('animation__fadein');
             this.el.setAttribute('animation__fadeout', {
                 property: 'model-opacity',
                 to: 0,
@@ -78,5 +90,55 @@ AFRAME.registerComponent('moon-controller', {
                 easing: 'linear'
             });
         });
+
+        // Toggle between Sun and Moon based on Global Sky Events emitted by SceneThemeController
+        window.addEventListener('sky-theme-changed', (e) => {
+            const time = e.detail.time;
+            if (time === 'day' || time === 'morning') {
+                this.becomeSun();
+            } else if (time === 'evening') {
+                this.becomeSun(0xff8800);
+            } else if (time === 'night') {
+                this.becomeMoon();
+            }
+        });
+    },
+
+    becomeSun: function (colorHex = 0xffea00) {
+        // Change the moon into a glowing Sun
+        const mesh = this.el.getObject3D('mesh');
+        if (mesh) {
+            mesh.traverse((node) => {
+                if (node.isMesh) {
+                    node.material.map = null; // Remove craters
+                    node.material.emissiveMap = null;
+                    node.material.emissive.setHex(colorHex);
+                    node.material.emissiveIntensity = 2.0;
+                    node.material.opacity = 1.0;
+                    node.material.transparent = false;
+                    node.material.needsUpdate = true;
+                }
+            });
+        }
+    },
+
+    becomeMoon: function () {
+        // Revert it back to a Moon
+        const mesh = this.el.getObject3D('mesh');
+        if (mesh) {
+            mesh.traverse((node) => {
+                if (node.isMesh) {
+                    const textureLoader = new THREE.TextureLoader();
+                    node.material.map = textureLoader.load('static/assets/3Dmodels/moon/textures/Material.002_diffuse.jpeg');
+                    node.material.map.encoding = THREE.sRGBEncoding;
+                    node.material.emissiveMap = node.material.map;
+                    node.material.emissive.setHex(0xffffff);
+                    node.material.emissiveIntensity = 1.0;
+                    node.material.opacity = 0.7; // Ghostlier look for night
+                    node.material.transparent = true;
+                    node.material.needsUpdate = true;
+                }
+            });
+        }
     }
 });

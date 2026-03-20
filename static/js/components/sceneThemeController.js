@@ -64,6 +64,9 @@ class SceneThemeController {
         if (event) {
             console.log(`SceneTheme: Sky → ${time}`);
             skyEl.emit(event);
+
+            // Broadcast globally for other components (like moonController) to react
+            window.dispatchEvent(new CustomEvent('sky-theme-changed', { detail: { time: time } }));
         } else {
             console.warn(`SceneThemeController: Unknown sky preset "${time}". Use: morning, evening, night`);
         }
@@ -116,12 +119,13 @@ class SceneThemeController {
         const particleSystems = document.querySelectorAll('[custom-particles]');
         particleSystems.forEach(ps => {
             const currentType = ps.getAttribute('custom-particles').type;
+            const currentCount = ps.getAttribute('custom-particles').count || 0;
 
             // Don't mess with sparks in the fireplace, they should stay sparks!
-            if (currentType === 'sparks') return;
+            if (currentCount <= 500) return;
 
             if (preset === 'Tension') {
-                ps.setAttribute('custom-particles', 'type: rain; count: 25000; color: #88ccff');
+                ps.setAttribute('custom-particles', 'type: sparks; count: 20000; color: #ff4500');
             } else if (preset === 'Melancholy') {
                 // We use 'rain' but color it white so it looks like snow falling
                 ps.setAttribute('custom-particles', 'type: rain; count: 30000; color: #ffffff');
